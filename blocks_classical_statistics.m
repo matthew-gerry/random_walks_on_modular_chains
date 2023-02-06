@@ -9,13 +9,15 @@
 % direction.
 
 % Symbolic manipulation of the chi-dressed master equation
-syms W
 syms r a chi
 
 % W = r*[[-2, exp(-1i*chi), 0, exp(1i*chi)];
 %        [exp(1i*chi), -1-a, a*exp(-1i*chi), 0];
 %        [0, a*exp(1i*chi), -2*a, a*exp(-1i*chi)];
 %        [exp(-1i*chi), 0, a*exp(1i*chi), -1-a]];
+
+% In the steady state limit, just counting at one transition and
+% multiplying by four steps is sufficient
 W = r*[[-2, exp(-4i*chi), 0, 1];
        [exp(4i*chi), -1-a, a, 0];
        [0, a, -2*a, a];
@@ -24,7 +26,7 @@ W = r*[[-2, exp(-4i*chi), 0, 1];
 [V,D] = eig(W); % Eigenvalues and eigenvectors
 
 % Steady state - not sure if this makes sense given the model
-syms G % Scaled cumulant generating function at steady state
+% Scaled cumulant generating function at steady state
 d = diag(D);
 % This method of identifying the dominant eigenvalue is probably slowing
 % down the code a lot
@@ -46,36 +48,6 @@ S_plot = double(subs(S_plot,a,a_list));
 
 S_analytic = 4*a_list*r_val^2./(r_val*(1+a_list));
 
-% Now do the analysis for the homogeneous random walk whose transition rate
-% between all states is equal to the average of the two in the
-% heterogeneous model. This should also be possible to calculate 
-% analytically without counting (just a simple random walk).
-
-% % This problem simplifies to the case of a two-state network
-% 
-% syms Wav chif chib
-% 
-% Wav = 0.5*r*(1+a)*[[-1, exp(1i*chif) + exp(1i*chib)];
-%                    [exp(1i*chif) + exp(1i*chib), -1]];
-% 
-% [Vav, Dav] = eig(Wav);
-% 
-% syms Gav
-% Gav = -Dav(1,1);
-% 
-% Javf = -1i*subs(diff(Gav,chif),[chif,chib],[0,0]);
-% Javb = -1i*subs(diff(Gav,chib),[chif,chib],[0,0]);
-% Jav_product = -subs(diff(diff(Gav,chif),chib),[chif,chib],[0,0]);
-% 
-% Savf = -subs(diff(Gav,chif,2),[chif,chib],[0,0]);
-% Savb = -subs(diff(Gav,chib,2),[chif,chib],[0,0]);
-% 
-% Sav = Savf + Savb - 2*Jav_product;
-% Sav_plot = subs(Sav,r,r_val);
-% Sav_plot = double(subs(Sav_plot,a,a_list));
-
-
-%
 % Of course, for a continuous-time, symmetric, homogeneous random walk, the
 % variance in the current is simply given by the transition rate (more
 % precisely, it is 2 times the diffusion coefficient, divide out the
@@ -85,7 +57,6 @@ Sav_analytic = 2*0.5*r_val*(1+a_list);
 
 % Also plot the case where the rates are both equal to the sum (as a check)
 % Ssum_analytic = r_val*(1+a_list);
-
 
 % Plotting
 figure; hold on; box on

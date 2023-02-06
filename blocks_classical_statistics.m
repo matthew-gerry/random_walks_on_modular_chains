@@ -12,30 +12,39 @@
 syms W
 syms r a chi
 
-W = r*[[-2, exp(-1i*chi), 0, exp(1i*chi)];
-       [exp(1i*chi), -1-a, a*exp(-1i*chi), 0];
-       [0, a*exp(1i*chi), -2*a, a*exp(-1i*chi)];
-       [exp(-1i*chi), 0, a*exp(1i*chi), -1-a]];
+% W = r*[[-2, exp(-1i*chi), 0, exp(1i*chi)];
+%        [exp(1i*chi), -1-a, a*exp(-1i*chi), 0];
+%        [0, a*exp(1i*chi), -2*a, a*exp(-1i*chi)];
+%        [exp(-1i*chi), 0, a*exp(1i*chi), -1-a]];
+W = r*[[-2, exp(-4i*chi), 0, 1];
+       [exp(4i*chi), -1-a, a, 0];
+       [0, a, -2*a, a];
+       [1, 0, a, -1-a]];
 
 [V,D] = eig(W); % Eigenvalues and eigenvectors
 
 % Steady state - not sure if this makes sense given the model
 syms G % Scaled cumulant generating function at steady state
-G = -D(1,1); % Just hard-coding that it's the first element (based on checks)
-          % Difficult to soft code - this could break the code though
+d = diag(D);
+% This method of identifying the dominant eigenvalue is probably slowing
+% down the code a lot
+CGFindex = find(real(double(subs(d,[r,a,chi],[1,0.5,0])))==0); % Arb. values subbed for r and a
+G = d(CGFindex);
 
 J = -1i*subs(diff(G,chi),chi,0); % Mean current at steady state
 S = -subs(diff(G,chi,2),chi,0); % Variance in current at steady state
 
 % Plug in some values and plot
 r_val = 1; % arb
-a_list = 0.01:0.15:20;
+a_list = 0.01:0.3:20;
 % The program throws an error if you try to plot at a=1 (I think there is a
 % divergence due to extra symmetries in the Liouvillian) - so just offset
 % the a_list so as not to include a=1. Similar with a=0.
 
 S_plot = subs(S,r,r_val);
 S_plot = double(subs(S_plot,a,a_list));
+
+S_analytic = 4*a_list*r_val^2./(r_val*(1+a_list));
 
 % Now do the analysis for the homogeneous random walk whose transition rate
 % between all states is equal to the average of the two in the
@@ -80,9 +89,10 @@ Sav_analytic = 2*0.5*r_val*(1+a_list);
 
 % Plotting
 figure; hold on; box on
-plot(a_list, S_plot, "DisplayName", "Alternating blocks, $r_1$ and $r_2$")
+plot(a_list, S_plot, '.b',"DisplayName", "Alternating blocks, $r_1$ and $r_2$")
+plot(a_list, S_analytic, '-m', "DisplayName", "Alternating blocks, analytic expression")
 % plot(a_list, Sav_plot)
-plot(a_list, Sav_analytic, 'DisplayName', "Homogeneous at average rate $(r_1+r_2)/2$")
+plot(a_list, Sav_analytic, '--r', 'DisplayName', "Homogeneous at average rate $(r_1+r_2)/2$")
 % plot(a_list, Ssum_analytic, 'DisplayName', "Homogeneous at sum of rates $(r_1+r_2)$")
 xlabel("$r_2/r_1$","Interpreter","latex")
 ylabel("$\langle\langle J^2\rangle\rangle$","Interpreter","latex")
@@ -232,4 +242,34 @@ plot(d_list, JSS_plot)
 avline = yline(JSS_av_plot,'--k');
 hold off
 
+%% Blocks of length 1 (fast alternation)
 
+
+% Symbolic manipulation with the rate matrix
+syms L1
+syms r a b
+
+% r: the average forwards rate between the two regions
+% a: ratio of forwards rates between the two regions
+% b: the ratio of backwards rate to forwards rate (common between the two regions)
+
+L1 = r*[[-1-a*b, b, 0, a];
+       [1, -a-b, a*b, 0];
+       [0, a, -1-a*b, b];
+       [a*b, 0, 1, -a-b]];
+
+[V1, D1] = eig(L1);
+
+rho1 = V1(:,1)/sum(V1(:,1));
+
+J1 = L1(2,1)*rho1(1) - L1(1,2)*rho1(2);
+
+% Plug in some values and plot
+r_val = 1; % arb
+b_val = 0.5; % Forward rates twice as fast as reverse rates
+a_list = 0.01:0.15:20;
+
+J1_plot = subs(J1,[r,b],[r_val, b_val]);
+J1_plot = double(subs(J1_plot,a,a_list));
+
+plot(a_list,J1_plot)

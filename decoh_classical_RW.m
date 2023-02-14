@@ -11,14 +11,14 @@ dga_list = 0:4:1.9*ga_av; % difference between decoherence rates will vary
 % dga_list = [3];
 
 % Counting field
-dchi = 0.01;
+dchi = 0.005;
 chi = [-2*dchi,-dchi,0,dchi,2*dchi];
 
 % % SYMMETRIC CASE (alternating decoherence rates but no bias)
 % Analytic results for homogeneous chain with averaged decoherence rate
 k_av = tau^2/ga_av; % classical transition rates based on model of Cao (NJP 15, 085010, 2013)
 % Mean flux at steady state is trivially zero
-S_av = 2*k_av; % Classic resutlt for symmetric random walk
+S_av = 2*k_av; % Classic result for symmetric random walk
 
 
 block_lengths = 1:6;

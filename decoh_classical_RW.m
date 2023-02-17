@@ -24,60 +24,24 @@ S_av = 2*k_av; % Classic result for symmetric random walk
 block_lengths = 1:6;
 
 S = zeros(length(block_lengths),length(dga_list)); % Initialize lists for variance results
-C4 = zeros(length(block_lengths),length(dga_list));
+C4 = zeros(length(block_lengths),length(dga_list)); % Initialize lists for 4th cumulant results
 
 for ii=1:length(dga_list)
-    ga = [ga_av - 0.5*dga_list(ii), ga_av + 0.5*dga_list(ii)]; % Higher and lower decoherence rates
-    k = tau^2./ga;
+    for block_length=block_lengths % For each block length
+        dga = dga_list(ii);
 
-    % Numerics for block_lengths greater than 1
-    for block_length=block_lengths
-        dimL = 2*block_length; % Dimensionality of the Liouvillian
-        
-        % Define the Liouvillian matrix for the system
-        L = zeros(dimL); % Initialize the Liouvillian matrix
-        % Populate the entries of L above the main diagonal
-        L(1,dimL) = k(2); % By construction, the first site is always at the beginning of a new type-1 block
-        for jj=1:dimL-1
-            if rem(floor((jj-1)/block_length),2)==0 % Condition to be a site in the A blocks
-                L(jj,jj+1) = k(1);
-            elseif rem(floor((jj-1)/block_length),2)==1 % Condition to be a site in the B blocks
-                L(jj,jj+1) = k(2);
-            end
-        end % jj
-    
-        % Populate the entries of L below the main diagonal
-        L(dimL, 1) = k(2); % By construction, the first site is always at the beginning of a new type-1 block
-        for jj=2:dimL
-            if rem(floor((jj-2)/block_length),2)==0 % Condition for the site to the left to be in the A blocks
-                L(jj,jj-1) = k(1);
-            elseif rem(floor((jj-2)/block_length),2)==1 % Condition for the site to the left to be in the B blocks
-                L(jj,jj-1) = k(2);
-            end
-        end % jj
-    
-        for jj=1:dimL % Populate diagonals of Liouvillian
-            L(jj,jj) = -sum(L(:,jj));
-        end % jj
-        
-        % Full counting statistics
-        Lchi = zeros(dimL,dimL,length(chi)); % Initialize counting dependent Liouvillian
-        CGF = zeros(1,length(chi)); % Initialize the CGF
-        for jj=1:length(chi)
-            Lchi(:,:,jj) = L;
-        end
-        % Just count net steps taken from site 1 to 2
-        % Multiply counting field by dimL to account for the number of steps
-        % taken around the cycle
-        Lchi(1,2,:) = L(1,2)*exp(-dimL*1i*chi);
-        Lchi(2,1,:) = L(2,1)*exp(dimL*1i*chi);
-    
+        % Use diffusionLchi function to derive chi-dressed Liouvillian,
+        % rates, counting field
+        [Lchi,k,chi] = diffusionLchi(block_length,block_length,ga_av,dga,tau,dchi,5);
+
+        % FCS: determine dominant eigenvalue of Lchi to obtain the CGF
         for jj=1:length(chi)
             [V,D] = eig(Lchi(:,:,jj));
             d = diag(D);
             CGF(jj) = d(real(d)==max(real(d)));
         end
         
+        % Differentiate the CGF to obtain cumulants
         if block_length==1
             S(1,ii) = 4*prod(k)/sum(k); % Analytic results for one-block sites (J Stat Phys 1454: 1352-1364)
             % Could also do it numerically

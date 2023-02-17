@@ -36,77 +36,69 @@
 % respectively.
 
 
-
 function [Lchi,k,chi] = diffusionLchi(nA,nB,ga_av,dga,tau,dchi,chisteps)
 
-% Parameter checks - break function execution if invalid
-if rem(chisteps,2)==0 || chisteps < 3
-    fprintf('chisteps argument must be an odd integer, 3 or greater\n\n');
-    return;
-elseif nA==0 || nB==0
-    fprintf('Trivial case - do not use diffusionLchi function\n\n');
-    return;
-end
-
-% Define rates based on average ga and ga_difference
-gaA = ga_av + 0.5*dga;
-gaB = ga_av - 0.5*dga;
-k = tau^2./[gaA,gaB]; % List of rates
-
-% List of chi values
-chi = -0.5*(chisteps-1)*dchi:dchi:0.5*(chisteps-1)*dchi;
-
-dimL = nA + nB; % Dimension of Liouvillian
-Lchi = zeros(dimL,dimL,length(chi)); % Initialize Lchi matrix
-
-% Special case - all one-site blocks
-if nA==1 && nB==1
-    diag_elements = -sum(k)*ones(chisteps,1);
-    Lchi12 = k(1)*exp(-dimL*1i*chi) + k(2);
-    Lchi21 = k(1)*exp(dimL*1i*chi) + k(2);
-    Lchi(1,1,:) = diag_elements;
-    Lchi(2,2,:) = diag_elements;
-    Lchi(1,2,:) = Lchi12; Lchi(2,1,:) = Lchi21;
-
-else
-    L = zeros(dimL); % Initialize the bare Liouvillian matrix
-
-    L(dimL, 1) = k(2); % Rate out of state 1 to the left, by construction
-    L(1, dimL) = k(2); % Rate into state 1 from the left, by construction
-
-    sites = 1:dimL; % Just an array of the site labels, 1, 2, ... dimL
-    block_types = 2 - (rem(sites,dimL)~=0 & rem(sites,dimL)<=nA); % 1 for sites in block type A, 2 if in B
-
-    % Assign values immediately above the main diagonal of L
-    for ii=1:dimL-1
-        L(ii,ii+1) = k(block_types(ii));
-    end % ii
-
-    % Assign values immediately below the main diagonal of L
-    for ii=2:dimL
-        L(ii,ii-1) = k(block_types(ii-1)); % ii minus because rate is determined by block type of site to the left
-    end % ii
-
-    % Assign diagonal values of L
-    for ii=1:dimL
-        L(ii,ii) = -sum(L(:,ii)); % Normalization condition
-    end % ii
-
-    % Chi-dressed Liouvillian
-    for jj=1:chisteps
-        Lchi(:,:,jj) = L; % Prepare 3-index object as just a stack of L matrices
-    end % jj
-
-    % Incorporate chi-dependence to 1<->2 transitions, scale by number of
-    % steps in a cycle (dimL)
-    Lchi(1,2,:) = L(1,2)*exp(-dimL*1i*chi);
-    Lchi(2,1,:) = L(2,1)*exp(dimL*1i*chi);
+    % Parameter checks - break function execution if invalid
+    if rem(chisteps,2)==0 || chisteps < 3
+        error('chisteps argument must be an odd integer, 3 or greater');
+    elseif nA==0 || nB==0
+        error('Trivial case - use diffusionLchi function only when nA and nB are both nonzero');
+    end
     
-
-end % cases
-
-
-
-
-
-end
+    % Define rates based on average ga and ga_difference
+    gaA = ga_av + 0.5*dga;
+    gaB = ga_av - 0.5*dga;
+    k = tau^2./[gaA,gaB]; % List of rates
+    
+    % List of chi values
+    chi = -0.5*(chisteps-1)*dchi:dchi:0.5*(chisteps-1)*dchi;
+    
+    dimL = nA + nB; % Dimension of Liouvillian
+    Lchi = zeros(dimL,dimL,length(chi)); % Initialize Lchi matrix
+    
+    % Special case - all one-site blocks
+    if nA==1 && nB==1
+        diag_elements = -sum(k)*ones(chisteps,1);
+        Lchi12 = k(1)*exp(-dimL*1i*chi) + k(2);
+        Lchi21 = k(1)*exp(dimL*1i*chi) + k(2);
+        Lchi(1,1,:) = diag_elements;
+        Lchi(2,2,:) = diag_elements;
+        Lchi(1,2,:) = Lchi12; Lchi(2,1,:) = Lchi21;
+    
+    else
+        L = zeros(dimL); % Initialize the bare Liouvillian matrix
+    
+        L(dimL, 1) = k(2); % Rate out of state 1 to the left, by construction
+        L(1, dimL) = k(2); % Rate into state 1 from the left, by construction
+    
+        sites = 1:dimL; % Just an array of the site labels, 1, 2, ... dimL
+        block_types = 2 - (rem(sites,dimL)~=0 & rem(sites,dimL)<=nA); % 1 for sites in block type A, 2 if in B
+    
+        % Assign values immediately above the main diagonal of L
+        for ii=1:dimL-1
+            L(ii,ii+1) = k(block_types(ii));
+        end % ii
+    
+        % Assign values immediately below the main diagonal of L
+        for ii=2:dimL
+            L(ii,ii-1) = k(block_types(ii-1)); % ii minus because rate is determined by block type of site to the left
+        end % ii
+    
+        % Assign diagonal values of L
+        for ii=1:dimL
+            L(ii,ii) = -sum(L(:,ii)); % Normalization condition
+        end % ii
+    
+        % Chi-dressed Liouvillian
+        for jj=1:chisteps
+            Lchi(:,:,jj) = L; % Prepare 3-index object as just a stack of L matrices
+        end % jj
+    
+        % Incorporate chi-dependence to 1<->2 transitions, scale by number of
+        % steps in a cycle (dimL)
+        Lchi(1,2,:) = L(1,2)*exp(-dimL*1i*chi);
+        Lchi(2,1,:) = L(2,1)*exp(dimL*1i*chi);
+        
+    
+    end % cases
+end % function

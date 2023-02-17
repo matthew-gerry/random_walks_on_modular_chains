@@ -1,26 +1,46 @@
 % decoh_classical_RW.m
 % Statistcs for a classical random walk with transition rates based on a
 % quantum mechanical model with tunnelling coupling between sites on a
-% molecule/chain and local decoherence
+% molecule/chain and local decoherence. Symmetric case - alternating
+% decoherence rates but no bias.
+
 % Matthew Gerry, February 2023
 
 % Parameters determining rates
 tau = 1; % tunnel coupling between nearest neighbours (all sites degenerate)
 ga_av = 10; % average decoherence rate between the two regions
-dga_list = 0:4:1.9*ga_av; % difference between decoherence rates will vary
-% dga_list = [3];
 
-% Counting field
+% Counting field step
 dchi = 0.005;
-chi = [-2*dchi,-dchi,0,dchi,2*dchi];
 
-% % SYMMETRIC CASE (alternating decoherence rates but no bias)
-% Analytic results for homogeneous chain with averaged decoherence rate
+
+%%% ANALYTIC RESULTS FOR HOMOGENEOUS CHAIN WITH AVERAGED DECOHERENCE RATE
+
 k_av = tau^2/ga_av; % classical transition rates based on model of Cao (NJP 15, 085010, 2013)
 % Mean flux at steady state is trivially zero
 S_av = 2*k_av; % Classic result for symmetric random walk
 
 
+%%% PLOT CGF VS CHI FOR ONE CHOICE OF BLOCK LENGTH AND dga
+
+block_length_CGF = 3;
+dga_cgf = 10;
+chisteps_cgf = 61; % Must be odd
+[Lchi, k, chi] = diffusionLchi(block_length_CGF,block_length_CGF,ga_av,dga_cgf,tau,dchi,chisteps_cgf);
+CGF_plot = CGFclassical(Lchi);
+
+figure; hold on; box on
+plot(chi, CGF_plot, DisplayName="$\mathcal{G}(\chi)$")
+plot(chi, -0.5*S_av*chi.^2,'--',DisplayName="$-\frac{S_0}{2}\chi^2$")
+xlabel("$\chi$",Interpreter="latex")
+legend(Interpreter="latex")
+set(gca, fontsize=14)
+hold off
+
+
+%%% DO FCS FOR A RANGE OF BLOCK LENGTHS AND dga VALUES
+
+dga_list = 0:0.05:1.9*ga_av; % difference between decoherence rates will vary
 block_lengths = 1:6;
 
 S = zeros(length(block_lengths),length(dga_list)); % Initialize lists for variance results
@@ -34,12 +54,7 @@ for ii=1:length(dga_list)
         % rates, counting field
         [Lchi,k,chi] = diffusionLchi(block_length,block_length,ga_av,dga,tau,dchi,5);
 
-        % FCS: determine dominant eigenvalue of Lchi to obtain the CGF
-        for jj=1:length(chi)
-            [V,D] = eig(Lchi(:,:,jj));
-            d = diag(D);
-            CGF(jj) = d(real(d)==max(real(d)));
-        end
+        CGF = CGFclassical(Lchi); % Obtain CGF by passing Lchi to CGFclassical function
         
         % Differentiate the CGF to obtain cumulants
         if block_length==1
@@ -56,7 +71,12 @@ for ii=1:length(dga_list)
     end % block_lengths
 end % ii
 
-S_av
-S
-
-C4 % There is an issue with the method for block_length=1 - ignore first row
+figure; hold on; box on
+for jj=1:length(block_lengths)
+    plot(dga_list, C4(jj,:), DisplayName=strcat("$l\;=\;$",num2str(block_lengths(jj))))
+end
+xlabel("$\Delta\gamma$",Interpreter="latex")
+ylabel("$\langle\langle J^4\rangle\rangle$",interpreter="latex")
+legend(Interpreter="latex", location="northwest")
+set(gca, fontSize=14)
+hold off

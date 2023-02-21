@@ -89,7 +89,6 @@ hold off
 % Hold nA (size of blocks associated with larger gamma) fixed and vary nB
 nA = 3;
 nB_list = [1,3,5,11];
-n = [2,3]; % Fixed block lengths for now, n:=[nA, nB]
 
 % Pre-allocation of lists to contain data
 S_wa = zeros(length(nB_list),length(dga_list)); % Variance based on "weighted average" rate

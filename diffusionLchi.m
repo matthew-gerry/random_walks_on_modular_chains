@@ -1,4 +1,5 @@
 % diffusionLchi.m
+
 % Function to generate the chi-dressed Liovillian for a random walk on a
 % line with alternating blocks of sites with varying transition rates
 % based on two different values of 1/k.

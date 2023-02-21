@@ -17,10 +17,6 @@ bias = 1.5; % bias factor (ratio of forward to reverse rates)
 dchi = 0.01; % Counting field step
 
 
-%%% ANALYTIC RESULTS FOR HOMOGENEOUS CHAIN WITH AVERAGED DECOHERENCE RATE
-%   (come back to this)
-
-
 %%% PLOT CGF VS CHI FOR ONE CHOICE OF BLOCK LENGTH AND dga
 
 % Parameters specific to CGF-plotting section of the program (arb.)
@@ -34,22 +30,20 @@ chisteps_cgf = 61; % Must be odd
 CGF_plot = CGFclassical(Lchi);
 
 % Plotting imaginary and real parts of the cumulant generating functions
-% To-do: get analytic estimates based on the analogous homogeneous RW and plot comparison
-% figure;
-% subplot(1,2,1); hold on; box on
-% plot(chi, imag(CGF_plot), DisplayName="$\mathcal{G}(\chi)$")
-% xlabel("$\chi$",Interpreter="latex")
-% legend(Interpreter="latex")
-% set(gca, fontsize=14)
-% hold off
-% 
-% subplot(1,2,2); hold on; box on
-% plot(chi, real(CGF_plot), DisplayName="$\mathcal{G}(\chi)$")
-% % plot(chi, -0.5*S_av*chi.^2,'--',DisplayName="$-\frac{S_0}{2}\chi^2$")
-% xlabel("$\chi$",Interpreter="latex")
-% legend(Interpreter="latex")
-% set(gca, fontsize=14)
-% hold off
+figure;
+subplot(1,2,1); hold on; box on
+plot(chi, imag(CGF_plot), DisplayName="$\mathcal{G}(\chi)$")
+xlabel("$\chi$",Interpreter="latex")
+legend(Interpreter="latex")
+set(gca, fontsize=14)
+hold off
+
+subplot(1,2,2); hold on; box on
+plot(chi, real(CGF_plot), DisplayName="$\mathcal{G}(\chi)$")
+xlabel("$\chi$",Interpreter="latex")
+legend(Interpreter="latex")
+set(gca, fontsize=14)
+hold off
 
 
 %%% FCS FOR A RANGE OF BLOCK LENGTHS AND dga VALUES

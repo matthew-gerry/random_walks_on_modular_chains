@@ -18,16 +18,17 @@
 % Matthew Gerry, February 2023
 
 
-% Parameters
-% nA and nB - the lengths (number of sites) of the two blocks with
-%             differing transiton rates. Both must be at least 1.
-% ga_av     - the average ga value (proportional to reciprocal of
-%             transitionrates) associated with the two blocks
-% dga       - the difference in ga between the two blocks
-% tau       - sqrt of a coefficient by which all rates are scaled
-% dchi      - chi_step to use for numerical full counting statistics
-% chisteps  - length of list of chi values - a longer list allows one to
-%             obtain higher order cumulants. Must be odd and at least 3.
+% Arguments
+% nA and nB   - the lengths (number of sites) of the two blocks with
+%               differing transiton rates. Both must be at least 1.
+% bias_factor - ratio of forwards to reverse rates (set to 1 if no bias)
+% ga_av       - the average ga value (proportional to reciprocal of
+%               transitionrates) associated with the two blocks
+% dga         - the difference in ga between the two blocks
+% tau         - sqrt of a coefficient by which all rates are scaled
+% dchi        - chi_step to use for numerical full counting statistics
+% chisteps    - length of list of chi values - a longer list allows one to
+%               obtain higher order cumulants. Must be odd and at least 3.
 
 % Pass the average ga and the difference between ga for the two alternating
 % regions as arguments to this function.
@@ -36,7 +37,7 @@
 % respectively.
 
 
-function [Lchi,k,chi] = diffusionLchi(nA,nB,ga_av,dga,tau,dchi,chisteps)
+function [Lchi, k, k_r, chi] = diffusionLchi(nA,nB,bias_factor,ga_av,dga,tau,dchi,chisteps)
 
     % Parameter checks - break function execution if invalid
     if rem(chisteps,2)==0 || chisteps < 3
@@ -49,6 +50,7 @@ function [Lchi,k,chi] = diffusionLchi(nA,nB,ga_av,dga,tau,dchi,chisteps)
     gaA = ga_av + 0.5*dga;
     gaB = ga_av - 0.5*dga;
     k = tau^2./[gaA,gaB]; % List of rates
+    k_r = k/bias_factor; % List of reverse rates
     
     % List of chi values
     chi = -0.5*(chisteps-1)*dchi:dchi:0.5*(chisteps-1)*dchi;
@@ -58,30 +60,30 @@ function [Lchi,k,chi] = diffusionLchi(nA,nB,ga_av,dga,tau,dchi,chisteps)
     
     % Special case - all one-site blocks
     if nA==1 && nB==1
-        diag_elements = -sum(k)*ones(chisteps,1);
-        Lchi12 = k(1)*exp(-dimL*1i*chi) + k(2);
-        Lchi21 = k(1)*exp(dimL*1i*chi) + k(2);
-        Lchi(1,1,:) = diag_elements;
-        Lchi(2,2,:) = diag_elements;
-        Lchi(1,2,:) = Lchi12; Lchi(2,1,:) = Lchi21;
+        % Enter each matrix element directly, vary along chi-dimension as needed
+        Lchi(1,1,:) = -sum(k)*ones(chisteps,1);
+        Lchi(2,2,:) = -sum(k_r)*ones(chisteps,1);
+        Lchi(1,2,:) = k_r(1)*exp(-dimL*1i*chi) + k_r(2);
+        Lchi(2,1,:) = k(1)*exp(dimL*1i*chi) + k(2);
     
-    else
+    else % nA or nB > 1, dimL > 2
         L = zeros(dimL); % Initialize the bare Liouvillian matrix
     
-        L(dimL, 1) = k(2); % Rate out of state 1 to the left, by construction
-        L(1, dimL) = k(2); % Rate into state 1 from the left, by construction
+        L(dimL, 1) = k_r(2); % Rate out of state 1 to the left (reverse direction), by construction
+        L(1, dimL) = k(2); % Rate into state 1 from the left (forward direction), by construction
     
         sites = 1:dimL; % Just an array of the site labels, 1, 2, ... dimL
         block_types = 2 - (rem(sites,dimL)~=0 & rem(sites,dimL)<=nA); % 1 for sites in block type A, 2 if in B
     
         % Assign values immediately above the main diagonal of L
         for ii=1:dimL-1
-            L(ii,ii+1) = k(block_types(ii));
+            L(ii,ii+1) = k_r(block_types(ii)); % Reverse transitions
         end % ii
     
         % Assign values immediately below the main diagonal of L
         for ii=2:dimL
-            L(ii,ii-1) = k(block_types(ii-1)); % ii minus because rate is determined by block type of site to the left
+            L(ii,ii-1) = k(block_types(ii-1)); % Forward transitions
+            % ii-1 because rate is determined by block type of site to the left (by definition)
         end % ii
     
         % Assign diagonal values of L
@@ -98,7 +100,6 @@ function [Lchi,k,chi] = diffusionLchi(nA,nB,ga_av,dga,tau,dchi,chisteps)
         % steps in a cycle (dimL)
         Lchi(1,2,:) = L(1,2)*exp(-dimL*1i*chi);
         Lchi(2,1,:) = L(2,1)*exp(dimL*1i*chi);
-        
     
     end % cases
 end % function

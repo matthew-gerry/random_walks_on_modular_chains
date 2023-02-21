@@ -28,7 +28,7 @@ S_av = 2*k_av; % Classic result for symmetric random walk
 block_length_CGF = 3;
 dga_cgf = 10;
 chisteps_cgf = 61; % Must be odd
-[Lchi, k, chi] = diffusionLchi(block_length_CGF,block_length_CGF,ga_av,dga_cgf,tau,dchi,chisteps_cgf);
+[Lchi, k_cgf, kr_cgf, chi] = diffusionLchi(block_length_CGF,block_length_CGF,1,ga_av,dga_cgf,tau,dchi,chisteps_cgf);
 CGF_plot = CGFclassical(Lchi);
 
 figure; hold on; box on
@@ -54,7 +54,7 @@ for ii=1:length(dga_list)
 
         % Use diffusionLchi function to derive chi-dressed Liouvillian,
         % rates, counting field
-        [Lchi,k,chi] = diffusionLchi(block_length,block_length,ga_av,dga,tau,dchi,5);
+        [Lchi,k,k_r,chi] = diffusionLchi(block_length,block_length,1,ga_av,dga,tau,dchi,5);
 
         CGF = CGFclassical(Lchi); % Obtain CGF by passing Lchi to CGFclassical function
         
@@ -106,14 +106,14 @@ for jj=1:length(nB_list)
     
         % Use diffusionLchi function to derive chi-dressed Liouvillian,
         % rates, counting field
-        [Lchi_ue,k_ue,~] = diffusionLchi(n(1),n(2),ga_av,dga,tau,dchi,5);
+        [Lchi_ue,k_ue,kr_ue,~] = diffusionLchi(n(1),n(2),1,ga_av,dga,tau,dchi,5);
         
         % Analytics for homogeneous RW with weighted-averaged gamma
         ga_wa = ga_av - 0.5*dga*diff(n)/sum(n); % Weighted average gamma
         S_wa(jj,ii) = 2*tau^2/ga_wa; % S based on weighted averaged rate (analytic)
         
         % diffusionLchi function for homogeneous RW with weighted average gamma
-        [Lchi_wa,k_wa,chi] = diffusionLchi(n(1),n(2),ga_wa,0,tau,dchi,5);
+        [Lchi_wa,k_wa,kr_wa,chi] = diffusionLchi(n(1),n(2),1,ga_wa,0,tau,dchi,5);
     
         % Full counting statistics
         CGF_ue = CGFclassical(Lchi_ue); % Obtain CGF by passing Lchi to CGFclassical function

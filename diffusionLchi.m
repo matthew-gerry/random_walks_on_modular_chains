@@ -1,7 +1,7 @@
 % diffusionLchi.m
 % Function to generate the chi-dressed Liovillian for a random walk on a
 % line with alternating blocks of sites with varying transition rates
-% based on two different values of 1/k. This random walk has no bias.
+% based on two different values of 1/k.
 
 % The chi-dressed Liouvillian is that of a corresponding Markov jump
 % process on a cyclic network of states, doing counting statistics on

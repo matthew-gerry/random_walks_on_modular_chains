@@ -132,6 +132,8 @@ for jj=1:length(nB_list)
     end % ii
 end % nB
 
+% Plot 2nd and 4th cumulants side-by-side for each value of nB - show
+% modular chain and associated homogeneous chain on same plot to compare
 figure
 for jj=1:length(nB_list)
     subplot(length(nB_list),2,2*jj-1); hold on; box on

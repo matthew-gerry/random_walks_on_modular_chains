@@ -24,7 +24,7 @@
 %               differing transiton rates. Both must be at least 1.
 % bias_factor - ratio of forwards to reverse rates (set to 1 if no bias)
 % ga_av       - the average ga value (proportional to reciprocal of
-%               transitionrates) associated with the two blocks
+%               transition rates) associated with the two blocks
 % dga         - the difference in ga between the two blocks
 % tau         - sqrt of a coefficient by which all rates are scaled
 % dchi        - chi_step to use for numerical full counting statistics

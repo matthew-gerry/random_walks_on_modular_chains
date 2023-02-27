@@ -1,4 +1,4 @@
-%diffusionCGF_symb.m
+%diffusionLchi_symb.m
 
 % A function to generate the scaled cumulant generating function at steady
 % state for a unicyclic network representing an random walk on an infinite
@@ -13,7 +13,7 @@
 %               differing transiton rates. Both must be at least 1
 % b           - ratio of forwards to reverse rates (set to 1 if no bias)
 
-function G = diffusionCGF_symb(nA, nB)
+function [tau, ga_av, dga, b, chi, Lchi] = diffusionLchi_symb(nA, nB)
 
     if nA==0 || nB==0
         error('Trivial case - use diffusionCGF_symb function only when nA and nB are both nonzero')
@@ -67,14 +67,16 @@ function G = diffusionCGF_symb(nA, nB)
         Lchi(2,1) = Lchi(2,1)*exp(dimL*1i*chi);
     
     end % cases
-    
-    % Find dominant eigenvalues of Lchi
-    d = eig(Lchi);
-    % Identify index of dominant eigenvalue
-    CGFindex = find(max(double(subs(d,[tau,ga_av,dga,chi],[1.0,1.0,0.5,0.0])))); % Arb. values subbed for tau, ga_av, dga
-    
-    % Scaled cumulant generating function at steady state
-    G = d(CGFindex);
+
+    % THIS FUNCTION USED TO BE USED TO OBTAIN THE CGF, BUT IT WAS FAULTY SO
+    % I REMOVED THIS FEATURE - UNCOMMENT AT OWN RISK
+%     % Find dominant eigenvalues of Lchi
+%     d = eig(Lchi);
+%     % Identify index of dominant eigenvalue
+%     CGFindex = find(double(subs(d,[tau,ga_av,dga,chi,b],[1.0,1.0,0.5,0.0,1]))==max(double(subs(d,[tau,ga_av,dga,chi,b],[1.0,1.0,0.5,0.0,1])))); % Arb. values subbed for tau, ga_av, dga
+%     
+%     % Scaled cumulant generating function at steady state
+%     G = d(CGFindex);
 
 
 end % function

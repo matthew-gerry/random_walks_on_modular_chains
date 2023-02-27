@@ -21,7 +21,7 @@
 
 % Arguments
 % nA and nB   - the lengths (number of sites) of the two blocks with
-%               differing transiton rates. Both must be at least 1.
+%               differing transiton rates. Both must be at least 1
 % bias_factor - ratio of forwards to reverse rates (set to 1 if no bias)
 % ga_av       - the average ga value (proportional to reciprocal of
 %               transition rates) associated with the two blocks
@@ -29,7 +29,7 @@
 % tau         - sqrt of a coefficient by which all rates are scaled
 % dchi        - chi_step to use for numerical full counting statistics
 % chisteps    - length of list of chi values - a longer list allows one to
-%               obtain higher order cumulants. Must be odd and at least 3.
+%               obtain higher order cumulants. Must be odd and at least 3
 
 % Pass the average ga and the difference between ga for the two alternating
 % regions as arguments to this function.
@@ -62,10 +62,10 @@ function [Lchi, k, k_r, chi] = diffusionLchi(nA,nB,bias_factor,ga_av,dga,tau,dch
     % Special case - all one-site blocks
     if nA==1 && nB==1
         % Enter each matrix element directly, vary along chi-dimension as needed
-        Lchi(1,1,:) = -sum(k)*ones(chisteps,1);
-        Lchi(2,2,:) = -sum(k_r)*ones(chisteps,1);
-        Lchi(1,2,:) = k_r(1)*exp(-dimL*1i*chi) + k_r(2);
-        Lchi(2,1,:) = k(1)*exp(dimL*1i*chi) + k(2);
+        Lchi(1,1,:) = -(k(1) + k_r(2))*ones(chisteps,1);
+        Lchi(2,2,:) = -(k_r(1) + k(2))*ones(chisteps,1);
+        Lchi(1,2,:) = k_r(1)*exp(-dimL*1i*chi) + k(2);
+        Lchi(2,1,:) = k(1)*exp(dimL*1i*chi) + k_r(2);
     
     else % nA or nB > 1, dimL > 2
         L = zeros(dimL); % Initialize the bare Liouvillian matrix

@@ -1,6 +1,6 @@
 %diffusionLchi_symb.m
 
-% A function to generate the scaled cumulant generating function at steady
+% A function to generate the counting field-dressed rate matrix at steady
 % state for a unicyclic network representing an random walk on an infinite
 % modular chain (classical). The model is the same as that in the
 % diffusionLchi.m function, but here we use Matlab's symbolic toolkit for 
@@ -11,7 +11,7 @@
 % Arguments
 % nA and nB   - the lengths (number of sites) of the two blocks with
 %               differing transiton rates. Both must be at least 1
-% b           - ratio of forwards to reverse rates (set to 1 if no bias)
+% lr           - log ratio of forwards to reverse rates (set to 0 if no bias)
 
 function [tau, ga_av, dga, lr, chi, Lchi] = diffusionLchi_symb(nA, nB)
 
@@ -68,16 +68,5 @@ function [tau, ga_av, dga, lr, chi, Lchi] = diffusionLchi_symb(nA, nB)
         Lchi(2,1) = Lchi(2,1)*exp(dimL*1i*chi);
     
     end % cases
-
-    % THIS FUNCTION USED TO BE USED TO OBTAIN THE CGF, BUT IT WAS FAULTY SO
-    % I REMOVED THIS FEATURE - UNCOMMENT AT OWN RISK
-%     % Find dominant eigenvalues of Lchi
-%     d = eig(Lchi);
-%     % Identify index of dominant eigenvalue
-%     CGFindex = find(double(subs(d,[tau,ga_av,dga,chi,b],[1.0,1.0,0.5,0.0,1]))==max(double(subs(d,[tau,ga_av,dga,chi,b],[1.0,1.0,0.5,0.0,1])))); % Arb. values subbed for tau, ga_av, dga
-%     
-%     % Scaled cumulant generating function at steady state
-%     G = d(CGFindex);
-
 
 end % function

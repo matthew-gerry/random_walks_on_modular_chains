@@ -13,7 +13,7 @@
 %               differing transiton rates. Both must be at least 1
 % b           - ratio of forwards to reverse rates (set to 1 if no bias)
 
-function [tau, ga_av, dga, b, chi, Lchi] = diffusionLchi_symb(nA, nB)
+function [tau, ga_av, dga, lr, chi, Lchi] = diffusionLchi_symb(nA, nB)
 
     if nA==0 || nB==0
         error('Trivial case - use diffusionCGF_symb function only when nA and nB are both nonzero')
@@ -21,11 +21,12 @@ function [tau, ga_av, dga, b, chi, Lchi] = diffusionLchi_symb(nA, nB)
     
     % Define variables to feature in expressions for rates, counting field
     % forward rates given by tau^2/(ga_av +/- dga/2)
-    syms tau ga_av dga b chi
+    syms tau ga_av dga lr chi
     
+    b = exp(lr); % Ratio of forward to reverse rates
+
     k = tau^2./[ga_av + 0.5*dga, ga_av - 0.5*dga]; % Forward rates based on differing gamma
     k_r = k/b; % Reverse rates
-    
     
     dimL = nA + nB; % Dimension of the rate matrix (number of sites in the cycle)
     Lchi = sym(zeros(dimL)); % Pre-allocate symbolic matrix

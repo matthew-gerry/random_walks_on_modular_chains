@@ -30,7 +30,7 @@ for ii=1:length(dga_list)
     dga = dga_list(ii);
 
     % Chi-dressed rate matrix for the process
-    [Lchi,~,~,chi] = diffusionLchi(n, n, 1, ga_av, dga, tau, dchi, chisteps);
+    [Lchi,~,~,chi] = diffusionLchi(n, n, 0, ga_av, dga, tau, dchi, chisteps);
 
     % Cumulant generating function
     G = CGFclassical(Lchi);
@@ -53,18 +53,18 @@ set(gca, fontsize=14)
 hold off
 
 
-%%% CASE 2: plot the CGF for various values of the bias ratio b, with fixed delta gamma
+%%% CASE 2: plot the CGF for various values of the bias lr, with fixed delta gamma
 
-b_list = 1:1:4; % Various values of the ratio of forward to reverse rates
+lr_list = [0, 0.5, 1, 2]; % Various values of the log-ratio of forward to reverse rates
 dga_b = 5; % dga value for plotting at varying b
 
-CGF_plot_b = zeros(length(b_list), chisteps); % Pre-allocate matrix of CGF values
+CGF_plot_b = zeros(length(lr_list), chisteps); % Pre-allocate matrix of CGF values
 
-for ii=1:length(b_list)
-    b = b_list(ii);
+for ii=1:length(lr_list)
+    lr = lr_list(ii);
 
     % Chi-dressed rate matrix for the process
-    [Lchi,~,~,chi] = diffusionLchi(n, n, b, ga_av, dga_b, tau, dchi, chisteps);
+    [Lchi,~,~,chi] = diffusionLchi(n, n, lr, ga_av, dga_b, tau, dchi, chisteps);
 
     % Cumulant generating function
     G = CGFclassical(Lchi);
@@ -73,8 +73,8 @@ end % ii
 
 figure;
 subplot(1,2,1); box on; hold on
-for ii=1:length(b_list)
-    plot(chi, imag(CGF_plot_b(ii,:)),DisplayName=strcat("$b$ = ",num2str(b_list(ii))));
+for ii=1:length(lr_list)
+    plot(chi, imag(CGF_plot_b(ii,:)),DisplayName=strcat("Log-ratio: ",num2str(lr_list(ii))));
 end % ii
 legend(Interpreter="latex",Location="north",Orientation="horizontal")
 xlim([min(chi),max(chi)])
@@ -85,8 +85,8 @@ set(gca, fontsize=14)
 hold off
 
 subplot(1,2,2); box on; hold on
-for ii=1:length(b_list)
-    plot(chi, real(CGF_plot_b(ii,:)),DisplayName=strcat("$b$ = ",num2str(b_list(ii))));
+for ii=1:length(lr_list)
+    plot(chi, real(CGF_plot_b(ii,:)),DisplayName=strcat("Log-ratio: ",num2str(lr_list(ii))));
 end % ii
 % legend(Interpreter="latex")
 xlim([min(chi),max(chi)])

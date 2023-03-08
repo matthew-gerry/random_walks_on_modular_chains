@@ -12,7 +12,7 @@
 % Parameters determining rates
 tau = 1; % tunnel coupling between nearest neighbours (all sites degenerate)
 ga_av = 10; % average decoherence rate between the two regions
-bias = 1.5; % bias factor (ratio of forward to reverse rates)
+bias = 0.4; % bias measure (log ratio of forward to reverse rates)
 
 dchi = 0.01; % Counting field step
 

@@ -55,16 +55,16 @@ hold off
 
 %%% CASE 2: plot the CGF for various values of the bias lr, with fixed delta gamma
 
-lr_list = [0, 0.5, 1, 2]; % Various values of the log-ratio of forward to reverse rates
-dga_b = 5; % dga value for plotting at varying b
+bias_list = [0, 0.5, 1, 2]; % Various values of the log-ratio of forward to reverse rates
+dga_b = 5; % dga value for plotting at varying bias
 
-CGF_plot_b = zeros(length(lr_list), chisteps); % Pre-allocate matrix of CGF values
+CGF_plot_b = zeros(length(bias_list), chisteps); % Pre-allocate matrix of CGF values
 
-for ii=1:length(lr_list)
-    lr = lr_list(ii);
+for ii=1:length(bias_list)
+    bias = bias_list(ii);
 
     % Chi-dressed rate matrix for the process
-    [Lchi,~,~,chi] = diffusionLchi(n, n, lr, ga_av, dga_b, tau, dchi, chisteps);
+    [Lchi,~,~,chi] = diffusionLchi(n, n, bias, ga_av, dga_b, tau, dchi, chisteps);
 
     % Cumulant generating function
     G = CGFclassical(Lchi);
@@ -73,8 +73,8 @@ end % ii
 
 figure;
 subplot(1,2,1); box on; hold on
-for ii=1:length(lr_list)
-    plot(chi, imag(CGF_plot_b(ii,:)),DisplayName=strcat("Log-ratio: ",num2str(lr_list(ii))));
+for ii=1:length(bias_list)
+    plot(chi, imag(CGF_plot_b(ii,:)),DisplayName=strcat("Bias: ",num2str(bias_list(ii))));
 end % ii
 legend(Interpreter="latex",Location="north",Orientation="horizontal")
 xlim([min(chi),max(chi)])
@@ -85,8 +85,8 @@ set(gca, fontsize=14)
 hold off
 
 subplot(1,2,2); box on; hold on
-for ii=1:length(lr_list)
-    plot(chi, real(CGF_plot_b(ii,:)),DisplayName=strcat("Log-ratio: ",num2str(lr_list(ii))));
+for ii=1:length(bias_list)
+    plot(chi, real(CGF_plot_b(ii,:)),DisplayName=strcat("Bias: ",num2str(bias_list(ii))));
 end % ii
 % legend(Interpreter="latex")
 xlim([min(chi),max(chi)])

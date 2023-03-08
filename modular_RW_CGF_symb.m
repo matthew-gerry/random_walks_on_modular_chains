@@ -58,7 +58,7 @@
 
 %%% ANALYTIC EXPRESSIONS FOR CUMULANTS, WITH BIAS
 n = 2; % For now
-[tau, ga_av, dga, lr, chi, Lchi] = diffusionLchi_symb(n,n);
+[tau, ga_av, dga, b, chi, Lchi] = diffusionLchi_symb(n,n);
 
 Lchi_eigs = eig(Lchi); % Eigenvalues of the chi-dressed rate matrix
 
@@ -67,7 +67,7 @@ Lchi_eigs = eig(Lchi); % Eigenvalues of the chi-dressed rate matrix
 % here at zero bias - it appears to be the first element of Lchi_eigs for
 % arbitrarily small but finite bias, but then its the second element at
 % exactly zero bias
-Lchi_mixed = simplify(subs(Lchi, [tau, ga_av, dga, lr, chi], [1, 10, 5, 0.00001, 0]));
+Lchi_mixed = simplify(subs(Lchi, [tau, ga_av, dga, b, chi], [1, 10, 5, 0.00001, 0]));
 mixed_eigs = double(eig(Lchi_mixed));
 CGF_index = find(mixed_eigs==0);
 

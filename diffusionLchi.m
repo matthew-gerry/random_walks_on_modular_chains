@@ -22,7 +22,7 @@
 % Arguments
 % nA and nB   - the lengths (number of sites) of the two blocks with
 %               differing transiton rates. Both must be at least 1
-% log_ratio   - log ratio of forward to reverse rates (set to 0 if no bias)
+% bias        - log ratio of forward to reverse rates (set to 0 if no bias)
 % ga_av       - the average ga value (proportional to reciprocal of
 %               transition rates) associated with the two blocks
 % dga         - the difference in ga between the two blocks
@@ -38,7 +38,7 @@
 % respectively.
 
 
-function [Lchi, k, k_r, chi] = diffusionLchi(nA,nB,log_ratio,ga_av,dga,tau,dchi,chisteps)
+function [Lchi, k, k_r, chi] = diffusionLchi(nA,nB,bias,ga_av,dga,tau,dchi,chisteps)
 
     % Parameter checks - break function execution if invalid
     if rem(chisteps,2)==0 || chisteps < 3
@@ -47,13 +47,13 @@ function [Lchi, k, k_r, chi] = diffusionLchi(nA,nB,log_ratio,ga_av,dga,tau,dchi,
         error('Trivial case - use diffusionLchi function only when nA and nB are both nonzero');
     end
     
-    bias_factor = exp(log_ratio); % Ratio of forward to reverse rates
+    bias_ratio = exp(bias); % Ratio of forward to reverse rates
 
     % Define rates based on average ga and ga_difference
     gaA = ga_av + 0.5*dga;
     gaB = ga_av - 0.5*dga;
     k = tau^2./[gaA,gaB]; % List of rates
-    k_r = k/bias_factor; % List of reverse rates
+    k_r = k/bias_ratio; % List of reverse rates
     
     % List of chi values
     chi = -0.5*(chisteps-1)*dchi:dchi:0.5*(chisteps-1)*dchi;

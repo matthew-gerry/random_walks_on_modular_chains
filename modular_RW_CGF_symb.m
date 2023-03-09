@@ -12,9 +12,9 @@
 
 %%% ANALYTIC EXPRESSIONS FOR CUMULANTS, WITH BIAS
 
-n = 2; % For now
+n = 1; % For now
 [tau, ga_av, dga, b, chi, Lchi] = diffusionLchi_symb(n,n);
-Lchi = subs(Lchi, [tau, ga_av], [1,10]); % Substitute some numerical values to speed up code
+% Lchi = subs(Lchi, [tau, ga_av], [1,10]); % Substitute some numerical values to speed up code
 
 Lchi_eigs = eig(Lchi); % Eigenvalues of the chi-dressed rate matrix
 
@@ -35,8 +35,10 @@ J = -1i*subs(diff(CGF, chi), chi, 0); % Symbolic function for the current
 
 % Mean current dependence on delta_gamma
 J_dga_1 = diff(J,dga);
-J_dga_2 = diff(J_dga_1, dga);
 
-% SO FAR, TOO SLOW
+% Variance
+S = -subs(diff(CGF,chi,2),chi,0); % Symbolic function for the variance
+
+
 
 

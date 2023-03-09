@@ -30,15 +30,17 @@ CGF_index = find(mixed_eigs==0);
 CGF = Lchi_eigs(CGF_index);
 
 % Let's begin the expansions
+
 % Mean current
 J = -1i*subs(diff(CGF, chi), chi, 0); % Symbolic function for the current
-
 % Mean current dependence on delta_gamma
 J_dga_1 = diff(J,dga);
 
 % Variance
-S = -subs(diff(CGF,chi,2),chi,0); % Symbolic function for the variance
+S = -simplify(subs(diff(CGF,chi,2),chi,0)); % Symbolic function for the variance
 
+% Skewness
+C3 = 1i*simplify(subs(diff(CGF,chi,3),chi,0));
 
-
-
+% Kurtosis
+C4 = simplify(subs(diff(CGF,chi,4),chi,0));

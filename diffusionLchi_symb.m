@@ -36,8 +36,8 @@ function [tau, ga_av, dga, b, chi, Lchi] = diffusionLchi_symb(nA, nB)
         % Enter each matrix element directly, vary along chi-dimension as needed
         Lchi(1,1) = -(k(1) + k_r(2));
         Lchi(2,2) = -(k_r(1) + k(2));
-        Lchi(1,2) = k_r(1)*exp(-dimL*1i*chi) + k_r(2);
-        Lchi(2,1) = k(1)*exp(dimL*1i*chi) + k(2);
+        Lchi(1,2) = k_r(1)*exp(-dimL*1i*chi) + k(2);
+        Lchi(2,1) = k(1)*exp(dimL*1i*chi) + k_r(2);
     
     else
         % Enter the bare rates first

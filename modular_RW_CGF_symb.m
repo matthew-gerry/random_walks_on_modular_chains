@@ -23,9 +23,9 @@ Lchi_eigs = eig(Lchi); % Eigenvalues of the chi-dressed rate matrix
 % here at zero bias - it appears to be the first element of Lchi_eigs for
 % arbitrarily small but finite bias, but then its the second element at
 % exactly zero bias
-Lchi_mixed = simplify(subs(Lchi, chi, 0));
-mixed_eigs = eig(Lchi_mixed);
-CGF_index = find(mixed_eigs==0);
+% Lchi_mixed = simplify(subs(Lchi, chi, 0));
+evaluated_eigs = double(subs(Lchi_eigs,[tau, ga_av, dga, b, chi],[1,10,5,0.5,0]));
+CGF_index = find(evaluated_eigs==0);
 
 CGF = Lchi_eigs(CGF_index);
 

@@ -40,7 +40,7 @@ J_dga_1 = diff(J,dga);
 S = -simplify(subs(diff(CGF,chi,2),chi,0)); % Symbolic function for the variance
 
 % Skewness
-C3 = 1i*simplify(subs(diff(CGF,chi,3),chi,0));
+C3 = simplify(1i*subs(diff(CGF,chi,3),chi,0));
 
 % Kurtosis
 C4 = simplify(subs(diff(CGF,chi,4),chi,0));

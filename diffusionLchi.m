@@ -57,10 +57,10 @@ function [Lchi, k, k_r, chi] = diffusionLchi(nA,nB,bias,ga_av,dga,tau,dchi,chist
     
     % List of chi values
     chi = -0.5*(chisteps-1)*dchi:dchi:0.5*(chisteps-1)*dchi;
-    
+
     dimL = nA + nB; % Dimension of Liouvillian
     Lchi = zeros(dimL,dimL,length(chi)); % Initialize Lchi matrix
-    
+
     % Special case - all one-site blocks
     if nA==1 && nB==1
         % Enter each matrix element directly, vary along chi-dimension as needed
@@ -69,7 +69,7 @@ function [Lchi, k, k_r, chi] = diffusionLchi(nA,nB,bias,ga_av,dga,tau,dchi,chist
         Lchi(1,2,:) = k_r(1)*exp(-dimL*1i*chi) + k(2);
         Lchi(2,1,:) = k(1)*exp(dimL*1i*chi) + k_r(2);
     
-    else % nA or nB > 1, dimL > 2
+    else % nA > 1 or nB > 1, dimL > 2
         L = zeros(dimL); % Initialize the bare Liouvillian matrix
     
         L(dimL, 1) = k_r(2); % Rate out of state 1 to the left (reverse direction), by construction

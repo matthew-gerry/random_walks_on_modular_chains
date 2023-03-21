@@ -180,7 +180,7 @@ end % jj
 
 b_list = 0:0.2:8;
 dga_1 = 5.0;
-dch = 0.001;
+dch = 0.01;
 
 J_1 = zeros(1,length(b_list));
 S_1 = zeros(1,length(b_list));

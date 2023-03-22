@@ -95,3 +95,62 @@ ylabel("Re$[\mathcal{G}(\chi)]$",Interpreter="latex")
 title(strcat("$n_A=n_B=\;$",num2str(n),", $\bar{\gamma} =\;$",num2str(ga_av),", $\Delta\gamma=\;$",num2str(dga_b)),Interpreter="latex")
 set(gca, fontsize=14)
 hold off
+
+
+%% % CASE 3: compare to the analytic expression for the CGF when n=1 for both regions
+
+bias_list_compare = [0, 0.5, 4];
+
+% Set parameters for counting field
+dchi = 0.04;
+chisteps = 61; % Must be odd
+
+
+CGF_num = zeros(length(bias_list_compare), chisteps); % Pre-allocate matrices of CGF values
+CGF_ana = zeros(length(bias_list_compare), chisteps);
+for ii=1:length(bias_list_compare)
+    b = bias_list_compare(ii);
+
+    [Lchi,~,~,chi] = diffusionLchi(1, 1, b, ga_av, dga_b, tau, dchi, chisteps);
+
+    % Cumulant generating function determined numerically
+    G = CGFclassical(Lchi);
+    CGF_num(ii,:) = G; % Record values
+
+    % Analytic expression for the CGF derived in modular_RW_CGF_symb.m
+    sqrtarg = (cosh(0.5*b+1i*chi)).^2 - 0.25i*(dga_b/ga_av)^2*sin(chi).*sinh(b+1i*chi);
+    G_ana = 2*tau^2*exp(-b/2)*(sqrt(sqrtarg) - cosh(b/2))/(ga_av*(1-0.25*(dga_b/ga_av)^2));
+
+    CGF_ana(ii,:) = G_ana;
+
+end
+
+colour_list = ['b','r','m'];
+
+% Numerical values are plotted with marker, analytic with dashed curves
+
+figure
+subplot(1,2,1); hold on; box on
+for ii=1:length(bias_list_compare)
+    numcurve = plot(chi, imag(CGF_num(ii,:)), 'x', Color=colour_list(ii));
+    numcurve.Annotation.LegendInformation.IconDisplayStyle = "off";
+    plot(chi, imag(CGF_ana(ii,:)), '--', Color=colour_list(ii), DisplayName=strcat("$b=\;$",num2str(bias_list_compare(ii))))
+end
+xlabel("$\chi$", Interpreter="latex")
+ylabel("Im[$\mathcal{G}(\chi)$]",Interpreter="latex")
+legend(Interpreter="latex",Location="northwest")
+set(gca, fontsize=14)
+hold off
+
+subplot(1,2,2); hold on; box on
+for ii=1:length(bias_list_compare)
+    numcurve = plot(chi, real(CGF_num(ii,:)), 'x', Color=colour_list(ii));
+    numcurve.Annotation.LegendInformation.IconDisplayStyle = "off";
+    plot(chi, real(CGF_ana(ii,:)), '--', Color=colour_list(ii), DisplayName=strcat("$b=\;$",num2str(bias_list_compare(ii))))
+end
+xlabel("$\chi$", Interpreter="latex")
+ylabel("Re[$\mathcal{G}(\chi)$]",Interpreter="latex")
+% legend(Interpreter="latex")
+set(gca, fontsize=14)
+hold off
+

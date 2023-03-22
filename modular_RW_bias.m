@@ -179,7 +179,7 @@ end % jj
 %% Compare the analytic results for nA=nB=1 to numerics
 
 b_list = 0:0.2:8;
-dga_1 = 15.0;
+dga_1 = 5.0;
 
 J_1 = zeros(1,length(b_list));
 S_1 = zeros(1,length(b_list));
@@ -208,8 +208,10 @@ S_ana = (tau^2/ga_av)*(1./(exp(b_list) + 1)).*((2*cosh(b_list/2)).^2 + (dga_1*si
 C3_ana = (tau^2/ga_av)*((exp(b_list)-1)./(exp(b_list) + 1).^2).*(4*(cosh(b_list/2)).^2 + 3*(dga_1/ga_av)^2 + 0.75*(dga_1/ga_av)^4*(sinh(b_list/2)).^2);
 
 C4_factor1 = exp(-b_list)./(exp(b_list) + 1).^3;
-C4_factor2 = (1+exp(b_list)).^4 + 0.25*(dga_1/ga_av)^2*(1-36*exp(b_list)+118*exp(2*b_list)-36*exp(3*b_list)+exp(4*b_list))-(9/16)*(dga_1/ga_av)^4*((1-exp(b_list)).^4-8*(1-exp(b_list)).^2)+(15/64)*(dga_1/ga_av)^6*(1-exp(b_list)).^4;
+C4_factor2 = (1+exp(b_list)).^4 + 0.25*(dga_1/ga_av)^2*(1-36*exp(b_list)+118*exp(2*b_list)-36*exp(3*b_list)+exp(4*b_list))-(9/16)*(dga_1/ga_av)^4*(1-12*exp(b_list)+22*exp(2*b_list) -12*exp(3*b_list)+exp(4*b_list))+(15/64)*(dga_1/ga_av)^6*(1-exp(b_list)).^4;
 C4_ana = (tau^2/ga_av)*C4_factor1.*C4_factor2;
+
+ktilde = tau^2/ga_av;
 
 figure
 subplot(2,2,1); hold on; box on;

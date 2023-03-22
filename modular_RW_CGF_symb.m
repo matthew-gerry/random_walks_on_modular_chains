@@ -44,3 +44,9 @@ C3 = simplify(1i*subs(diff(CGF,chi,3),chi,0));
 
 % Kurtosis
 C4 = simplify(subs(diff(CGF,chi,4),chi,0));
+
+
+% % Plot the variance as a check
+% S_plot = subs(S,[tau, ga_av, dga],[1.0,10.0,5.0]);
+% figure
+% fplot(S_plot,[0,10]);

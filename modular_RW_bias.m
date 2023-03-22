@@ -179,8 +179,7 @@ end % jj
 %% Compare the analytic results for nA=nB=1 to numerics
 
 b_list = 0:0.2:8;
-dga_1 = 5.0;
-dch = 0.01;
+dga_1 = 15.0;
 
 J_1 = zeros(1,length(b_list));
 S_1 = zeros(1,length(b_list));
@@ -205,28 +204,31 @@ end % ii
 
 % Anayltic expressions for the cumulants
 J_ana = 2*tau^2*sinh(b_list)./(ga_av*(1+exp(b_list)));
-S_ana = (tau^2/ga_av)*(exp(-b_list)./(exp(b_list) + 1)).*((2*cosh(b_list/2)).^2 + (dga_1*sinh(b_list/2)/ga_av).^2);
-C3_ana = (tau^2/ga_av)*((exp(b_list)-1)./(exp(b_list) + 1).^2).*(4*(cosh(b_list/2)).^2 + 4*(dga_1/ga_av)^2 + 0.75*(dga_1/ga_av)^4*(sinh(b_list/2)).^2);
-C4_ana = (tau^2/ga_av)*(exp(-b_list)./(exp(b_list) + 1).^3).*((1-exp(-b_list)).^4 + 0.25*(dga_1/ga_av)^2*(1-36*exp(b_list)+118*exp(2*b_list)-36*exp(3*b_list)+exp(4*b_list))-(9/16)*(dga_1/ga_av)^4*((1-exp(b_list)).^4-8*(1-exp(b_list)).^2)+(15/64)*(dga_1/ga_av)^6*(1-exp(b_list)).^4);
+S_ana = (tau^2/ga_av)*(1./(exp(b_list) + 1)).*((2*cosh(b_list/2)).^2 + (dga_1*sinh(b_list/2)/ga_av).^2);
+C3_ana = (tau^2/ga_av)*((exp(b_list)-1)./(exp(b_list) + 1).^2).*(4*(cosh(b_list/2)).^2 + 3*(dga_1/ga_av)^2 + 0.75*(dga_1/ga_av)^4*(sinh(b_list/2)).^2);
+
+C4_factor1 = exp(-b_list)./(exp(b_list) + 1).^3;
+C4_factor2 = (1+exp(b_list)).^4 + 0.25*(dga_1/ga_av)^2*(1-36*exp(b_list)+118*exp(2*b_list)-36*exp(3*b_list)+exp(4*b_list))-(9/16)*(dga_1/ga_av)^4*((1-exp(b_list)).^4-8*(1-exp(b_list)).^2)+(15/64)*(dga_1/ga_av)^6*(1-exp(b_list)).^4;
+C4_ana = (tau^2/ga_av)*C4_factor1.*C4_factor2;
 
 figure
 subplot(2,2,1); hold on; box on;
-plot(b_list, J_1)
+plot(b_list, J_1, 'o')
 plot(b_list, J_ana)
 hold off
 
 subplot(2,2,2); hold on; box on;
-plot(b_list, S_1)
+plot(b_list, S_1, 'o')
 plot(b_list, S_ana)
 hold off
 
 subplot(2,2,3); hold on; box on;
-plot(b_list, C3_1)
+plot(b_list, C3_1, 'o')
 plot(b_list, C3_ana)
 hold off
 
 subplot(2,2,4); hold on; box on;
-plot(b_list, C4_1)
+plot(b_list, C4_1, 'o')
 plot(b_list, C4_ana)
 hold off
 
@@ -246,5 +248,5 @@ function cumulant = differentiateCGF(CGF,dchi,order)
         diff0 = (differences(l/2) + differences(1 + l/2))/2; % Finite differences evaluated near chi=0
         % Averaged values around zero for even-length array
     end
-    cumulant = (-1i/dchi)^order*diff0; % Values of a cumulant or specified order
+    cumulant = ((-1i/dchi)^order)*diff0; % Values of a cumulant or specified order
 end % function

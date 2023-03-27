@@ -87,6 +87,7 @@ figure(2)
 for jj=2:length(b_list) % Exclude zero bias case - no block length or dga dependence
     subplot(1,2,jj-1); hold on; box on
     
+    % Prepare analytic curve for comparison
     b = b_list(jj);
     S_ana = 2*ktilde*exp(-b/2)/cosh(b/2)*((cosh(b/2))^2 + 0.25*(dga_axis*sinh(b/2)/ga_av).^2);
 
@@ -114,4 +115,37 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
     set(gca, fontsize=14)
 end % jj
 
+% Skenwness
+figure(3)
+for jj=2:length(b_list) % Exclude zero bias case - no block length or dga dependence
+    subplot(1,2,jj-1); hold on; box on
+    
+    % Prepare analytic curve for comparison
+    b = b_list(jj);
+    C3_factor1 = (exp(-b/2)*sinh(b/2)/(cosh(b/2)^2));
+    C3_factor2 = cosh(b/2)^2 + 0.75*(dga_axis/ga_av).^2 + (3/16)*(dga_axis/ga_av).^4*sinh(b/2)^2;
+    C3_ana = 2*(tau^2/ga_av)*C3_factor1*C3_factor2;
 
+    for kk=1:length(mA_list)
+        plot(dga_axis, C3(:,jj,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m_A =\;$",num2str(mA_list(kk))))
+    end % kk
+    plot(dga_axis, C3_ana, '--k', DisplayName="Analytic")
+    
+    % Reference lines
+    lowline = yline(ktilde, ':k', "$\tilde{k}$", Interpreter="latex", FontSize=14);
+    lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
+    highline = yline(4*ktilde, ':k', "$4\tilde{k}$", Interpreter="latex", FontSize=14);
+    highline.Annotation.LegendInformation.IconDisplayStyle = "off";
+
+    % Format subplot
+    yl = ylim;
+    ylim([0, 1.05*yl(2)])
+    xlim([0,max(dga_axis)])
+
+    xlabel("$\Delta\gamma$", Interpreter="latex")
+    if jj==2
+        ylabel("$\langle\langle J^3\rangle\rangle$",Interpreter="latex")
+        legend(Interpreter="latex", Location="northwest")
+    end % case
+    set(gca, fontsize=14)
+end % jj

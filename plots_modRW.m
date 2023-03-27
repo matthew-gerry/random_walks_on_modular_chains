@@ -16,23 +16,23 @@ chisteps = 5; % Number of counting field steps
 
 % Varying parameters
 mA_list = [1,2,4,8];
-b_list = [0,1/5,1];
-dga_axis = 0:0.02:1.9*ga_av;
+b_list = [0,1/5,8];
+dga_axis = 0:0.1:1.99*ga_av;
 
 
 %%% COMPUTE CGF %%%
 
 % Pre-allocate 4D array that will contain CGF at all param values
-bigCGF = zeros([length(mA_list), length(b_list), length(dga_axis), chisteps]);
+bigCGF = zeros([length(dga_axis), length(b_list), length(mA_list), chisteps]);
 
 % Loop through all sets parameter values and get the CGF as a function of
 % chi at each
 for ii=1:length(dga_axis)
     dga = dga_axis(ii);
-    for jj=1:length(mA_list)
-        mA = mA_list(jj);
-        for kk=1:length(b_list)
-            b = b_list(kk);
+    for jj=1:length(b_list)
+        b = b_list(jj);
+        for kk=1:length(mA_list)
+            mA = mA_list(kk);
 
             % Calculate CGF from rate matrix using functions in this project
             [Lchi,~,~,chi] = diffusionLchi(mA,mA,b,ga_av,dga,tau,dchi,chisteps);
@@ -66,3 +66,52 @@ C4 = diff4(:,:,:,0.5*(chisteps-3))/(1i*dchi)^4;
 
 
 %%% PLOT CUMULANTS %%%
+
+mrkrlist = ['s', 'o', '^', 'x'];
+colourlist = ["#0072BD", "#D95319", "#77AC30","#7E2F8E"];
+
+ktilde = tau^2/ga_av; % Homogeneous rate for reference lines
+
+% % Mean
+% figure(1)
+% for jj=2:length(b_list) % Exclude zero-bias case
+%     subplot(1,2,jj-1); hold on; box on
+%     for kk=1:length(mA_list)
+%         plot(dga_axis, J(:,jj,kk))
+%     end % kk
+%     ylim([0,1.2*tau^2/ga_av])
+% end % jj
+
+% Variance
+figure(2)
+for jj=2:length(b_list) % Exclude zero bias case - no block length or dga dependence
+    subplot(1,2,jj-1); hold on; box on
+    
+    b = b_list(jj);
+    S_ana = 2*ktilde*exp(-b/2)/cosh(b/2)*((cosh(b/2))^2 + 0.25*(dga_axis*sinh(b/2)/ga_av).^2);
+
+    for kk=1:length(mA_list)
+        plot(dga_axis, S(:,jj,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m_A =\;$",num2str(mA_list(kk))))
+    end % kk
+    plot(dga_axis, S_ana, '--k', DisplayName="Analytic")
+    
+    % Reference lines
+    lowline = yline(ktilde, ':k', "$\tilde{k}$", Interpreter="latex", FontSize=14);
+    lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
+    highline = yline(2*ktilde, ':k', "$2\tilde{k}$", Interpreter="latex", FontSize=14);
+    highline.Annotation.LegendInformation.IconDisplayStyle = "off";
+
+    % Format subplot
+    yl = ylim;
+    ylim([0.95*ktilde, 1.05*yl(2)])
+    xlim([0,max(dga_axis)])
+
+    xlabel("$\Delta\gamma$", Interpreter="latex")
+    if jj==2
+        ylabel("$\langle\langle J^2\rangle\rangle$",Interpreter="latex")
+        legend(Interpreter="latex", Location="southwest")
+    end % case
+    set(gca, fontsize=14)
+end % jj
+
+

@@ -104,13 +104,15 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
 
     % Format subplot
     yl = ylim;
-    ylim([0.95*ktilde, 1.05*yl(2)])
+    ylim([0.95*ktilde, 1.15*yl(2)])
     xlim([0,max(dga_axis)])
 
     xlabel("$\Delta\gamma$", Interpreter="latex")
     if jj==2
         ylabel("$\langle\langle J^2\rangle\rangle$",Interpreter="latex")
-        legend(Interpreter="latex", Location="southwest")
+        legend(Interpreter="latex", Location="southeast")
+        lowline.LabelHorizontalAlignment = "Left";
+        highline.LabelHorizontalAlignment = "Left";
     end % case
     set(gca, fontsize=14)
 end % jj
@@ -139,13 +141,53 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
 
     % Format subplot
     yl = ylim;
-    ylim([0, 1.05*yl(2)])
+    ylim([0, 1.15*yl(2)])
     xlim([0,max(dga_axis)])
 
     xlabel("$\Delta\gamma$", Interpreter="latex")
     if jj==2
         ylabel("$\langle\langle J^3\rangle\rangle$",Interpreter="latex")
         legend(Interpreter="latex", Location="northwest")
+        lowline.LabelHorizontalAlignment = "Left";
+        highline.LabelHorizontalAlignment = "Left";
     end % case
+    set(gca, fontsize=14)
+end % jj
+
+%% Kurtosis
+figure(4)
+for jj=1:length(b_list) % Exclude zero bias case - no block length or dga dependence
+    subplot(1,3,jj); hold on; box on
+    
+    % Prepare analytic curve for comparison
+    b = b_list(jj);
+    C4_factor1 = exp(-b/2)/cosh(b/2)^3;
+    C4_factor2 = cosh(b/2)^4 + (1/64)*(dga_axis/ga_av).^2*(exp(-2*b)-36*exp(-b)+118-36*exp(b)+exp(2*b))-(9/256)*(dga_axis/ga_av).^4*(exp(-2*b)-12*exp(-b)+22-12*exp(b)+exp(2*b))+(15/64)*(dga_axis/ga_av).^6*sinh(b/2).^4;
+    C4_ana = 2*ktilde*C4_factor1*C4_factor2;
+
+    for kk=1:length(mA_list)
+        plot(dga_axis, C4(:,jj,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m_A =\;$",num2str(mA_list(kk))))
+    end % kk
+    plot(dga_axis, C4_ana, '--k', DisplayName="Analytic")
+    
+    % Reference lines
+    lowline = yline(ktilde, ':k', "$\tilde{k}$", Interpreter="latex", FontSize=14);
+    lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
+    highline = yline(8*ktilde, ':k', "$8\tilde{k}$", Interpreter="latex", FontSize=14);
+    highline.Annotation.LegendInformation.IconDisplayStyle = "off";
+
+    % Format subplot
+    xlim([0,max(dga_axis)])
+    xlabel("$\Delta\gamma$", Interpreter="latex")
+    if jj==1
+        ylabel("$\langle\langle J^4\rangle\rangle$",Interpreter="latex")
+        legend(Interpreter="latex", Location="northwest")
+        lowline.LabelHorizontalAlignment = "Left";
+        highline.LabelHorizontalAlignment = "Left";
+        ylim([0, 80])
+    elseif jj==3
+        ylim([0, 8.8*ktilde])
+    end % case
+
     set(gca, fontsize=14)
 end % jj

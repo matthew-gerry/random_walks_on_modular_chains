@@ -66,8 +66,8 @@ function [Lchi, k, k_r, chi] = diffusionLchi(nA,nB,bias,ga_av,dga,tau,dchi,chist
         % Enter each matrix element directly, vary along chi-dimension as needed
         Lchi(1,1,:) = -(k(1) + k_r(2))*ones(chisteps,1);
         Lchi(2,2,:) = -(k_r(1) + k(2))*ones(chisteps,1);
-        Lchi(1,2,:) = k_r(1)*exp(-dimL*1i*chi) + k(2);
-        Lchi(2,1,:) = k(1)*exp(dimL*1i*chi) + k_r(2);
+        Lchi(1,2,:) = k_r(1)*exp(-1i*chi) + k(2)*exp(1i*chi);
+        Lchi(2,1,:) = k(1)*exp(1i*chi) + k_r(2)*exp(-1i*chi);
     
     else % nA > 1 or nB > 1, dimL > 2
         L = zeros(dimL); % Initialize the bare Liouvillian matrix
@@ -100,9 +100,17 @@ function [Lchi, k, k_r, chi] = diffusionLchi(nA,nB,bias,ga_av,dga,tau,dchi,chist
         end % jj
     
         % Incorporate chi-dependence to 1<->2 transitions, scale by number of
-        % steps in a cycle (dimL)
-        Lchi(1,2,:) = L(1,2)*exp(-dimL*1i*chi);
-        Lchi(2,1,:) = L(2,1)*exp(dimL*1i*chi);
+%         % steps in a cycle (dimL)
+%         Lchi(1,2,:) = L(1,2)*exp(-dimL*1i*chi);
+%         Lchi(2,1,:) = L(2,1)*exp(dimL*1i*chi);
+
+        % Incorporate the chi-dependence, counting a step at every transition
+        Lchi(1,dimL,:) = L(1,dimL)*exp(1i*chi);
+        Lchi(dimL,1,:) = L(dimL,1)*exp(-1i*chi);
+        for ii=1:dimL-1
+            Lchi(ii,ii+1,:) = L(ii,ii+1)*exp(-1i*chi);
+            Lchi(ii+1,ii,:) = L(ii+1,ii)*exp(1i*chi);
+        end % ii
     
     end % cases
 end % function

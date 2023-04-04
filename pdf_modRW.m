@@ -72,7 +72,7 @@ end
 bigPDF = real(bigPDF); % Remove remaining imag parts (just numerical error, order 1e-17)
 
 % example
-PDF = reshape(bigPDF(1,3,3,:),[1,chisteps]);
+PDF = reshape(bigPDF(3,1,1,:),[1,chisteps]);
 n_vals = -0.5*(chisteps-1):0.5*(chisteps-1);
 plot(n_vals, PDF)
 

@@ -45,13 +45,6 @@ for ii=1:length(dga_axis)
 end % ii
 
 
-
-% Get the probability distribution from the CGF
-longtime = 1e5;
-bigPDF = fft(exp(bigCGF*longtime), chisteps, 4);
-
-
-
 %%% COMPUTE CUMULANTS %%%
 % Use average of two central values for odd cumulants
 

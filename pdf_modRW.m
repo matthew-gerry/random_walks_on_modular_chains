@@ -51,14 +51,19 @@ end % ii
 
 
 % Get the probability distribution from the CGF
-bigPDF = zeros([length(dga_list), length(b_list), length(mA_list), chisteps]);
-longtime = 1e2;
-for n=-0.5*(chisteps-1):0.5*(chisteps-1)
+bigPDF = zeros([length(dga_list), length(b_list), length(mA_list), chisteps]); % Pre-allocate
+
+% Need to approximate moment generating function at longtime from CGF
+longtime = 1e2; % This should be long enough in s for the system to reach steady state
+bigMGF = exp(bigCGF*longtime);
+
+for n=-0.5*(chisteps-1):0.5*(chisteps-1) % Get coefficients associated with Fourier transform of MGF
+    % Define and reshape the complex exponential as needed
     FS_factor = exp(-1i*n*chi)/(2*pi);
     FS_factor = reshape(FS_factor, [1,1,1,chisteps]);
     FS_factor = repmat(FS_factor,[length(dga_list),length(b_list),length(mA_list),1]);
     
-    bigMGF = exp(bigCGF*longtime);
+    % Get Fourier coefficients, build up bigPDF
     FS_summand = bigMGF.*FS_factor;
     Pn = sum(FS_summand,4)*dchi;
     bigPDF(:,:,:,n+0.5*(chisteps+1)) = Pn;
@@ -67,8 +72,7 @@ end
 bigPDF = real(bigPDF); % Remove remaining imag parts (just numerical error, order 1e-17)
 
 % example
-PDF_raw = reshape(bigPDF(1,2,2,:),[1,chisteps]);
-PDF = PDF_raw(1:2:end);
-n_vals = -0.5*(chisteps-1):2:0.5*(chisteps-1);
+PDF = reshape(bigPDF(1,3,3,:),[1,chisteps]);
+n_vals = -0.5*(chisteps-1):0.5*(chisteps-1);
 plot(n_vals, PDF)
 

@@ -52,7 +52,7 @@ bigPDF = fft(exp(bigCGF*longtime), chisteps, 4);
 
 
 
-%% % COMPUTE CUMULANTS %%%
+%%% COMPUTE CUMULANTS %%%
 % Use average of two central values for odd cumulants
 
 % Mean

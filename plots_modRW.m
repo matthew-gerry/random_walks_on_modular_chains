@@ -45,7 +45,14 @@ for ii=1:length(dga_axis)
 end % ii
 
 
-%%% COMPUTE CUMULANTS %%%
+
+% Get the probability distribution from the CGF
+longtime = 1e5;
+bigPDF = fft(exp(bigCGF*longtime), chisteps, 4);
+
+
+
+%% % COMPUTE CUMULANTS %%%
 % Use average of two central values for odd cumulants
 
 % Mean
@@ -154,7 +161,7 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
     set(gca, fontsize=14)
 end % jj
 
-%% Kurtosis
+%s Kurtosis
 figure(4)
 for jj=1:length(b_list) % Exclude zero bias case - no block length or dga dependence
     subplot(1,3,jj); hold on; box on

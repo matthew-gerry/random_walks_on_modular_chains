@@ -12,8 +12,9 @@
 tau = 1.0; % 1/s, "tunnel coupling"
 ga_av = 1.0; % 1/s, "decoherence rate"
 
-dchi = 0.01; % Counting field step
-chisteps = 101; % Number of counting field steps
+
+chisteps = 301; % Number of counting field steps
+dchi = 2*pi/chisteps; % Counting field step - ensure chi runs from -pi to pi
 
 % Varying parameters
 mA_list = [1,2,4,8];
@@ -39,6 +40,9 @@ for ii=1:length(dga_list)
             [Lchi,~,~,chi] = diffusionLchi(mA,mA,b,ga_av,dga,tau,dchi,chisteps);
             CGF = CGFclassical(Lchi);
 
+            % Big CGF has substantial extention along the chi dimension, so
+            % we can Fourier transform it with respect to chi to get the
+            % CGF
             bigCGF(ii,jj,kk,:) = CGF;
 
         end % kk
@@ -47,18 +51,24 @@ end % ii
 
 
 % Get the probability distribution from the CGF
-longtime = 1e5;
-for n=1:chisteps
-    FS_factor = exp(-2i*pi*n*chi/(chi(end)-chi(1)));
-    % Need to turn FS factor into a 4d array, multiply it by MGF, sum
+bigPDF = zeros([length(dga_list), length(b_list), length(mA_list), chisteps]);
+longtime = 1e2;
+for n=-0.5*(chisteps-1):0.5*(chisteps-1)
+    FS_factor = exp(-1i*n*chi)/(2*pi);
+    FS_factor = reshape(FS_factor, [1,1,1,chisteps]);
+    FS_factor = repmat(FS_factor,[length(dga_list),length(b_list),length(mA_list),1]);
+    
     bigMGF = exp(bigCGF*longtime);
-    FS_summand = 
-    bigPDF = sum(FS_summand);
+    FS_summand = bigMGF.*FS_factor;
+    Pn = sum(FS_summand,4)*dchi;
+    bigPDF(:,:,:,n+0.5*(chisteps+1)) = Pn;
 end
 
-
+bigPDF = real(bigPDF); % Remove remaining imag parts (just numerical error, order 1e-17)
 
 % example
-PDF = reshape(bigPDF(3,2,2,:),[1,chisteps]);
-plot(PDF)
+PDF = reshape(bigPDF(1,2,1,:),[1,chisteps]);
+PDF = PDF(1:2:end);
+n_vals = -0.5*(chisteps-1):2:0.5*(chisteps-1);
+plot(n_vals, PDF)
 

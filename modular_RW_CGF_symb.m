@@ -50,3 +50,20 @@ C4 = simplify(subs(diff(CGF,chi,4),chi,0));
 % S_plot = subs(S,[tau, ga_av, dga],[1.0,10.0,5.0]);
 % figure
 % fplot(S_plot,[0,10]);
+
+%% Analytic results with bias, longer segments
+% Just the steady state probability distribution
+
+n = 2; % Won't run with more than 2
+[tau, ga_av, dga, b, chi, Lchi] = diffusionLchi_symb(n,n);
+
+L = simplify(subs(Lchi,chi,0));
+
+[V, D] = eig(L);
+
+D = diag(D);
+
+ind = find(D==0);
+P = V(:, ind);
+P = simplify(P/sum(P));
+

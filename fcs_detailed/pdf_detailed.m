@@ -13,7 +13,7 @@ tau = 1.0; % 1/s, "tunnel coupling"
 ga_av = 1.0; % 1/s, "decoherence rate"
 
 
-chisteps = 101; % Number of counting field steps
+chisteps = 151; % Number of counting field steps
 dchi = 2*pi/chisteps; % Counting field step - ensure chi runs from -pi to pi
 
 % Varying parameters
@@ -48,3 +48,42 @@ for ii=1:length(dga_list)
         end % kk
     end % jj
 end % ii
+
+% Get the probability distribution from the CGF
+% Pre-allocate 5-index array for the PDF
+bigPDF = zeros([length(dga_list), length(b_list), length(mA_list), chisteps, chisteps]); % Pre-allocate
+
+% Need to approximate moment generating function at longtime from CGF
+longtime = 1e2; % This should be long enough in s for the system to reach steady state
+bigMGF = exp(bigCGF*longtime);
+
+% Get coefficients associated with Fourier transform of MGF
+for nA=-0.5*(chisteps-1):0.5*(chisteps-1)
+    for nB=-0.5*(chisteps-1):0.5*(chisteps-1)
+        % Define and reshape the complex exponential as needed
+        FS_factor = exp(-1i*(nA*chiA + nB*chiB))/(2*pi)^2;
+        FS_factor = reshape(FS_factor, [1,1,1,chisteps,chisteps]);
+        FS_factor = repmat(FS_factor,[length(dga_list),length(b_list),length(mA_list),1,1]);
+        
+        % Get Fourier coefficients, build up bigPDF
+        FS_summand = bigMGF.*FS_factor;
+        P_AB = sum(sum(FS_summand,5),4)*dchi^2;
+        bigPDF(:,:,:,nA+0.5*(chisteps+1),nB+0.5*(chisteps+1)) = P_AB;
+    end
+end
+
+bigPDF = real(bigPDF); % Eliminate imaginary parts (nonphysical, due to simulation noise)
+
+n_vals = -0.5*(chisteps-1):0.5*(chisteps-1); % nA and nB values corresponding to actual numbers of steps
+n_tot_vals = -chisteps+1:chisteps-1; % Possible values of the total number of steps
+
+% From the joint PDF for nA+nB, get the PDF for just n by tracing out the
+% distinction
+bigPDFn =  zeros([length(dga_list), length(b_list), length(mA_list), 2*chisteps-1]); % Pre-allocate
+for ii=1:chisteps
+    for jj=1:chisteps
+        bigPDFn(:,:,:,ii+jj-1) = bigPDFn(:,:,:,ii+jj-1) + bigPDF(:,:,:,ii,jj);
+    end
+end
+%%
+plot(n_tot_vals, reshape(bigPDFn(3,2,3,:),[1,2*chisteps-1]))

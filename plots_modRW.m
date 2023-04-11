@@ -17,7 +17,9 @@ chisteps = 5; % Number of counting field steps
 % Varying parameters
 mA_list = [1,2,4,8];
 b_list = [0,1/5,8];
+% b_list = 0:0.2:4; % For mean vs b plot
 dga_axis = 0:0.1:1.99*ga_av;
+% dga_axis = 1.0; % For mean vs b plot
 
 
 %%% COMPUTE CGF %%%
@@ -69,58 +71,57 @@ C4 = diff4(:,:,:,0.5*(chisteps-3))/(1i*dchi)^4;
 
 mrkrlist = ['s', 'o', '^', 'x'];
 colourlist = ["#0072BD", "#D95319", "#77AC30","#7E2F8E"];
+lettlist = ["(a) ", "(b) ", "(c) "];
 
-ktilde = tau^2/ga_av; % Homogeneous rate for reference lines
+kstar = tau^2/ga_av; % Homogeneous rate for reference lines
 
-% % Mean
-% figure(1)
-% for jj=2:length(b_list) % Exclude zero-bias case
-%     subplot(1,2,jj-1); hold on; box on
-%     for kk=1:length(mA_list)
-%         plot(dga_axis, J(:,jj,kk))
-%     end % kk
-%     ylim([0,1.2*tau^2/ga_av])
-% end % jj
 
 % Variance
-figure(2)
+figure(1)
 for jj=2:length(b_list) % Exclude zero bias case - no block length or dga dependence
-    subplot(1,2,jj-1); hold on; box on
+    subplot(2,1,jj-1); hold on; box on
     
     % Prepare analytic curve for comparison
     b = b_list(jj);
-    S_ana = 2*ktilde*exp(-b/2)/cosh(b/2)*((cosh(b/2))^2 + 0.25*(dga_axis*sinh(b/2)/ga_av).^2);
+    S_ana = 2*kstar*exp(-b/2)/cosh(b/2)*((cosh(b/2))^2 + 0.25*(dga_axis*sinh(b/2)/ga_av).^2);
 
+    plot(dga_axis, S_ana, '--k', DisplayName="Analytic")
     for kk=1:length(mA_list)
         plot(dga_axis, S(:,jj,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m_A =\;$",num2str(mA_list(kk))))
     end % kk
-    plot(dga_axis, S_ana, '--k', DisplayName="Analytic")
     
     % Reference lines
-    lowline = yline(ktilde, ':k', "$\tilde{k}$", Interpreter="latex", FontSize=14);
+    lowline = yline(kstar, ':k', "$k^*$", Interpreter="latex", FontSize=14);
     lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
-    highline = yline(2*ktilde, ':k', "$2\tilde{k}$", Interpreter="latex", FontSize=14);
+    highline = yline(2*kstar, ':k', "$2k^*$", Interpreter="latex", FontSize=14);
     highline.Annotation.LegendInformation.IconDisplayStyle = "off";
 
     % Format subplot
     yl = ylim;
-    ylim([0.95*ktilde, 1.15*yl(2)])
+    ylim([0.95*kstar, 1.15*yl(2)])
     xlim([0,max(dga_axis)])
 
-    xlabel("$\Delta\gamma$", Interpreter="latex")
-    if jj==2
-        ylabel("$\langle\langle J^2\rangle\rangle$",Interpreter="latex")
-        legend(Interpreter="latex", Location="southeast")
-        lowline.LabelHorizontalAlignment = "Left";
-        highline.LabelHorizontalAlignment = "Left";
-    end % case
+    ylabel("$\langle\langle J^2\rangle\rangle$",Interpreter="latex")
+    if jj==3
+        xlabel("$\Delta\gamma$", Interpreter="latex")
+%         lowline.LabelHorizontalAlignment = "Left";
+%         highline.LabelHorizontalAlignment = "Left";
+    elseif jj==2
+        legend(Interpreter="latex", Location="southwest")
+    end % cases
+
     set(gca, fontsize=14)
+
+    % Label subplot with bias value
+    yl = ylim;
+    xl = xlim;
+    text(0.95*xl(1) + 0.05*xl(2), 0.1*yl(1) + 0.9*yl(2), strcat(lettlist(jj-1),"$b=\;$",num2str(b)), Interpreter="latex", FontSize=14);
 end % jj
 
 % Skenwness
-figure(3)
+figure(2)
 for jj=2:length(b_list) % Exclude zero bias case - no block length or dga dependence
-    subplot(1,2,jj-1); hold on; box on
+    subplot(2,1,jj-1); hold on; box on
     
     % Prepare analytic curve for comparison
     b = b_list(jj);
@@ -128,15 +129,15 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
     C3_factor2 = cosh(b/2)^2 + 0.75*(dga_axis/ga_av).^2 + (3/16)*(dga_axis/ga_av).^4*sinh(b/2)^2;
     C3_ana = 2*(tau^2/ga_av)*C3_factor1*C3_factor2;
 
+    plot(dga_axis, C3_ana, '--k', DisplayName="Analytic")
     for kk=1:length(mA_list)
         plot(dga_axis, C3(:,jj,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m_A =\;$",num2str(mA_list(kk))))
     end % kk
-    plot(dga_axis, C3_ana, '--k', DisplayName="Analytic")
     
     % Reference lines
-    lowline = yline(ktilde, ':k', "$\tilde{k}$", Interpreter="latex", FontSize=14);
+    lowline = yline(kstar, ':k', "$k^*$", Interpreter="latex", FontSize=14);
     lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
-    highline = yline(4*ktilde, ':k', "$4\tilde{k}$", Interpreter="latex", FontSize=14);
+    highline = yline(4*kstar, ':k', "$4k^*$", Interpreter="latex", FontSize=14);
     highline.Annotation.LegendInformation.IconDisplayStyle = "off";
 
     % Format subplot
@@ -144,18 +145,24 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
     ylim([0, 1.15*yl(2)])
     xlim([0,max(dga_axis)])
 
-    xlabel("$\Delta\gamma$", Interpreter="latex")
-    if jj==2
-        ylabel("$\langle\langle J^3\rangle\rangle$",Interpreter="latex")
-        legend(Interpreter="latex", Location="northwest")
-        lowline.LabelHorizontalAlignment = "Left";
-        highline.LabelHorizontalAlignment = "Left";
-    end % case
+    ylabel("$\langle\langle J^3\rangle\rangle$",Interpreter="latex")
+    if jj==3
+        xlabel("$\Delta\gamma$", Interpreter="latex")
+%         lowline.LabelHorizontalAlignment = "Left";
+%         highline.LabelHorizontalAlignment = "Left";
+    elseif jj==2
+        legend(Interpreter="latex", Location="southwest")
+    end % cases
     set(gca, fontsize=14)
+
+    % Label subplot with bias value
+    yl = ylim;
+    xl = xlim;
+    text(0.95*xl(1) + 0.05*xl(2), 0.1*yl(1) + 0.9*yl(2), strcat(lettlist(jj-1),"$b=\;$",num2str(b)), Interpreter="latex", FontSize=14);
 end % jj
 
-%s Kurtosis
-figure(4)
+% Kurtosis
+figure(3)
 for jj=1:length(b_list) % Exclude zero bias case - no block length or dga dependence
     subplot(1,3,jj); hold on; box on
     
@@ -163,17 +170,17 @@ for jj=1:length(b_list) % Exclude zero bias case - no block length or dga depend
     b = b_list(jj);
     C4_factor1 = exp(-b/2)/cosh(b/2)^3;
     C4_factor2 = cosh(b/2)^4 + (1/64)*(dga_axis/ga_av).^2*(exp(-2*b)-36*exp(-b)+118-36*exp(b)+exp(2*b))-(9/256)*(dga_axis/ga_av).^4*(exp(-2*b)-12*exp(-b)+22-12*exp(b)+exp(2*b))+(15/64)*(dga_axis/ga_av).^6*sinh(b/2).^4;
-    C4_ana = 2*ktilde*C4_factor1*C4_factor2;
+    C4_ana = 2*kstar*C4_factor1*C4_factor2;
 
+    plot(dga_axis, C4_ana, '--k', DisplayName="Analytic")
     for kk=1:length(mA_list)
         plot(dga_axis, C4(:,jj,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m_A =\;$",num2str(mA_list(kk))))
     end % kk
-    plot(dga_axis, C4_ana, '--k', DisplayName="Analytic")
     
     % Reference lines
-    lowline = yline(ktilde, ':k', "$\tilde{k}$", Interpreter="latex", FontSize=14);
+    lowline = yline(kstar, ':k', "$k^*$", Interpreter="latex", FontSize=14);
     lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
-    highline = yline(8*ktilde, ':k', "$8\tilde{k}$", Interpreter="latex", FontSize=14);
+    highline = yline(8*kstar, ':k', "$8k^*$", Interpreter="latex", FontSize=14);
     highline.Annotation.LegendInformation.IconDisplayStyle = "off";
 
     % Format subplot
@@ -185,9 +192,46 @@ for jj=1:length(b_list) % Exclude zero bias case - no block length or dga depend
         lowline.LabelHorizontalAlignment = "Left";
         highline.LabelHorizontalAlignment = "Left";
         ylim([0, 80])
+    elseif jj==2
+        lowline.LabelHorizontalAlignment = "Left";
+        highline.LabelHorizontalAlignment = "Left";
     elseif jj==3
-        ylim([0, 8.8*ktilde])
+        ylim([0, 9.5*kstar])
     end % case
 
     set(gca, fontsize=14)
+
+    % Label subplot with bias value
+    yl = ylim;
+    xl = xlim;
+    text(0.95*xl(1) + 0.05*xl(2), 0.08*yl(1) + 0.92*yl(2), strcat(lettlist(jj),"$b=\;$",num2str(b)), Interpreter="latex", FontSize=14);
+
 end % jj
+
+%% Plot mean current as a function of b
+
+% Choose one delta_gamma value and use more values in the b_list just to
+% make this plot
+
+b_high_res = 0:0.05:4;
+J_ana = 2*exp(-0.5*b_high_res).*sinh(0.5*b_high_res)*kstar;
+
+% Mean
+figure(4)
+hold on; box on
+plot(b_high_res, J_ana, '--k', DisplayName="Analytic")
+for kk=1:length(mA_list)
+    plot(b_list, J(1,:,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m_A =\;$",num2str(mA_list(kk))))
+end % kk
+
+% Reference line
+lowline = yline(kstar, ':k', "$k^*$", Interpreter="latex", FontSize=14);
+lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
+
+xlabel("$b$",Interpreter="latex")
+ylabel("$\langle J\rangle$",Interpreter="latex")
+legend(Location="southeast", Interpreter="latex")
+set(gca, fontsize=14)
+ylim([0,1.12*kstar])
+
+

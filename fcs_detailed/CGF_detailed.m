@@ -11,7 +11,7 @@
 % Output is a 2d array containing values of the CGF at the corresponding
 % values of chi at which the Lchi input is evaluated
 
-% Matthew Gerry, February 2023
+% Matthew Gerry, April 2023
 
 function CGF = CGF_detailed(Lchi)
 

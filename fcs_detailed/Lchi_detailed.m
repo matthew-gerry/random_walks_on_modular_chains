@@ -17,7 +17,7 @@
 % This function also outputs the list of rates (length 2) and the 2d-array of
 % chi values used in case they are needed for further manipulations.
 
-% Matthew Gerry, February 2023
+% Matthew Gerry, April 2023
 
 
 % Arguments
@@ -40,7 +40,7 @@
 % respectively.
 
 
-function [Lchi, k, k_r, chi] = Lchi_detailed(nA,nB,bias,ga_av,dga,tau,dchi,chisteps)
+function [Lchi, k, k_r, chiA, chiB] = Lchi_detailed(nA,nB,bias,ga_av,dga,tau,dchi,chisteps)
 
     % Parameter checks - break function execution if invalid
     if rem(chisteps,2)==0 || chisteps < 3
@@ -113,7 +113,7 @@ function [Lchi, k, k_r, chi] = Lchi_detailed(nA,nB,bias,ga_av,dga,tau,dchi,chist
                 Lchi(ii+1,ii,:,:) = L(ii+1,ii)*exp(1i*chiB);
                 Lchi(ii,ii+1,:,:) = L(ii,ii+1)*exp(-1i*chiB);
             end % cases
-        
+        end % ii
     
     end % cases
 end % function

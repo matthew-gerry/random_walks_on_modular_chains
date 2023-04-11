@@ -55,7 +55,7 @@ bigPDF = zeros([length(dga_list), length(b_list), length(mA_list), chisteps]); %
 
 % Need to approximate moment generating function at longtime from CGF
 longtime = 2e2; % This should be long enough in s for the system to reach steady state
-bigMGF = exp(bigCGF*longtime);
+bigMGF = reshape(2*chi,[1,1,1,chisteps]).*exp(bigCGF*longtime);
 
 for n=-0.5*(chisteps-1):0.5*(chisteps-1) % Get coefficients associated with Fourier transform of MGF
     % Define and reshape the complex exponential as needed
@@ -72,7 +72,7 @@ end
 bigPDF = real(bigPDF); % Remove remaining imag parts (just numerical error, order 1e-17)
 
 % example
-PDF = reshape(bigPDF(3,1,1,:),[1,chisteps]);
+PDF = reshape(bigPDF(3,1,4,:),[1,chisteps]);
 n_vals = -0.5*(chisteps-1):0.5*(chisteps-1);
 figure()
 plot(n_vals, PDF)

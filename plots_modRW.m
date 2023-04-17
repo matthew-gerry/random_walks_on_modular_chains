@@ -5,6 +5,7 @@
 
 % Matthew Gerry, March 2023
 
+
 %%% PARAMETERS %%%
 
 % Constant parameters
@@ -15,55 +16,33 @@ dchi = 0.01; % Counting field step
 chisteps = 5; % Number of counting field steps
 
 % Varying parameters
-mA_list = [1,2,4,8];
+m_list = [1,2,4,8];
 b_list = [0,1/5,8];
 % b_list = 0:0.2:4; % For mean vs b plot
 dga_axis = 0:0.1:1.99*ga_av;
 % dga_axis = 1.0; % For mean vs b plot
 
 
-%%% COMPUTE CGF %%%
-
-% Pre-allocate 4D array that will contain CGF at all param values
-bigCGF = zeros([length(dga_axis), length(b_list), length(mA_list), chisteps]);
-
-% Loop through all sets parameter values and get the CGF as a function of
-% chi at each
-for ii=1:length(dga_axis)
-    dga = dga_axis(ii);
-    for jj=1:length(b_list)
-        b = b_list(jj);
-        for kk=1:length(mA_list)
-            mA = mA_list(kk);
-
-            % Calculate CGF from rate matrix using functions in this project
-            [Lchi,~,~,chi] = diffusionLchi(mA,mA,b,ga_av,dga,tau,dchi,chisteps);
-            CGF = CGFclassical(Lchi);
-
-            bigCGF(ii,jj,kk,:) = CGF;
-
-        end % kk
-    end % jj
-end % ii
-
-
 %%% COMPUTE CUMULANTS %%%
-% Use average of two central values for odd cumulants
 
+% Compute CGF
+[CGFarray, chi] = bigCGF(tau, ga_av, dchi, chisteps, dga_axis, b_list, m_list);
+
+% Use average of two central values for odd cumulants
 % Mean
-diff1 = diff(bigCGF, 1, 4); % First derivative of CGF
+diff1 = diff(CGFarray, 1, 4); % First derivative of CGF
 J = 0.5*(diff1(:,:,:,0.5*(chisteps-1)) + diff1(:,:,:,0.5*(chisteps+1)))/(1i*dchi);
 
 % Variance
-diff2 = diff(bigCGF, 2, 4); % Second derivative of CGF
+diff2 = diff(CGFarray, 2, 4); % Second derivative of CGF
 S = diff2(:,:,:,0.5*(chisteps-1))/(1i*dchi)^2;
 
 % Skewness
-diff3 = diff(bigCGF, 3, 4); % Third derivative of CGF
+diff3 = diff(CGFarray, 3, 4); % Third derivative of CGF
 C3 = 0.5*(diff3(:,:,:,0.5*(chisteps-3)) + diff3(:,:,:,0.5*(chisteps-1)))/(1i*dchi)^3;
 
 % Kurtosis
-diff4 = diff(bigCGF, 4, 4); % Fourth derivative of CGF
+diff4 = diff(CGFarray, 4, 4); % Fourth derivative of CGF
 C4 = diff4(:,:,:,0.5*(chisteps-3))/(1i*dchi)^4;
 
 
@@ -86,14 +65,14 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
     S_ana = 2*kstar*exp(-b/2)/cosh(b/2)*((cosh(b/2))^2 + 0.25*(dga_axis*sinh(b/2)/ga_av).^2);
 
     plot(dga_axis, S_ana, '--k', DisplayName="Analytic")
-    for kk=1:length(mA_list)
-        plot(dga_axis, S(:,jj,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m_A =\;$",num2str(mA_list(kk))))
+    for kk=1:length(m_list)
+        plot(dga_axis, S(:,jj,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m =\;$",num2str(m_list(kk))))
     end % kk
     
     % Reference lines
-    lowline = yline(kstar, ':k', "$k^*$", Interpreter="latex", FontSize=14);
+    lowline = yline(kstar, ':k', "$k^*$         ", Interpreter="latex", FontSize=14);
     lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
-    highline = yline(2*kstar, ':k', "$2k^*$", Interpreter="latex", FontSize=14);
+    highline = yline(2*kstar, ':k', "$2k^*$         ", Interpreter="latex", FontSize=14);
     highline.Annotation.LegendInformation.IconDisplayStyle = "off";
 
     % Format subplot
@@ -130,8 +109,8 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
     C3_ana = 2*(tau^2/ga_av)*C3_factor1*C3_factor2;
 
     plot(dga_axis, C3_ana, '--k', DisplayName="Analytic")
-    for kk=1:length(mA_list)
-        plot(dga_axis, C3(:,jj,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m_A =\;$",num2str(mA_list(kk))))
+    for kk=1:length(m_list)
+        plot(dga_axis, C3(:,jj,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m =\;$",num2str(m_list(kk))))
     end % kk
     
     % Reference lines
@@ -173,8 +152,8 @@ for jj=1:length(b_list) % Exclude zero bias case - no block length or dga depend
     C4_ana = 2*kstar*C4_factor1*C4_factor2;
 
     plot(dga_axis, C4_ana, '--k', DisplayName="Analytic")
-    for kk=1:length(mA_list)
-        plot(dga_axis, C4(:,jj,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m_A =\;$",num2str(mA_list(kk))))
+    for kk=1:length(m_list)
+        plot(dga_axis, C4(:,jj,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m =\;$",num2str(m_list(kk))))
     end % kk
     
     % Reference lines
@@ -220,8 +199,8 @@ J_ana = 2*exp(-0.5*b_high_res).*sinh(0.5*b_high_res)*kstar;
 figure(4)
 hold on; box on
 plot(b_high_res, J_ana, '--k', DisplayName="Analytic")
-for kk=1:length(mA_list)
-    plot(b_list, J(1,:,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m_A =\;$",num2str(mA_list(kk))))
+for kk=1:length(m_list)
+    plot(b_list, J(1,:,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m =\;$",num2str(m_list(kk))))
 end % kk
 
 % Reference line

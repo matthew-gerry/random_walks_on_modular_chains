@@ -1,7 +1,9 @@
 % plots_modRW.m
 
 % Creation of the plots to be used in the infinite modular random walk
-% project. The four cumulants with varying bias at varying block_lengths
+% project. The four cumulants with varying bias at varying block_lengths.
+% First the variance, skewness, and kurtosis are plotted as a function of
+% delta gamma, then the mean is plotted as a function of b.
 
 % Matthew Gerry, March 2023
 
@@ -18,26 +20,19 @@ chisteps = 5; % Number of counting field steps
 % Varying parameters
 m_list = [1,2,4,8];
 b_list = [0,1/5,8];
-% b_list = 0:0.2:4; % For mean vs b plot
 dga_axis = 0:0.1:1.99*ga_av;
-% dga_axis = 1.0; % For mean vs b plot
 
 
 %%% COMPUTE CUMULANTS %%%
 
 % Compute CGF
-[CGFarray, chi] = bigCGF(tau, ga_av, dchi, chisteps, dga_axis, b_list, m_list);
-
-% Use average of two central values for odd cumulants
-% Mean
-diff1 = diff(CGFarray, 1, 4); % First derivative of CGF
-J = 0.5*(diff1(:,:,:,0.5*(chisteps-1)) + diff1(:,:,:,0.5*(chisteps+1)))/(1i*dchi);
+[CGFarray, ~] = bigCGF(tau, ga_av, dchi, chisteps, dga_axis, b_list, m_list);
 
 % Variance
 diff2 = diff(CGFarray, 2, 4); % Second derivative of CGF
 S = diff2(:,:,:,0.5*(chisteps-1))/(1i*dchi)^2;
 
-% Skewness
+% Skewness - use average of two central values for odd cumulants
 diff3 = diff(CGFarray, 3, 4); % Third derivative of CGF
 C3 = 0.5*(diff3(:,:,:,0.5*(chisteps-3)) + diff3(:,:,:,0.5*(chisteps-1)))/(1i*dchi)^3;
 
@@ -192,15 +187,25 @@ end % jj
 % Choose one delta_gamma value and use more values in the b_list just to
 % make this plot
 
+b_list_mean = 0:0.2:4; % For mean vs b plot
+dga_axis_mean = 1.0; % For mean vs b plot
+
+% Compute CGF
+[CGFarray_mean, ~] = bigCGF(tau, ga_av, dchi, chisteps, dga_axis_mean, b_list_mean, m_list);
+
+% Calculate mean numerically - use average of two central values
+diff1 = diff(CGFarray_mean, 1, 4); % First derivative of CGF
+J = 0.5*(diff1(:,:,:,0.5*(chisteps-1)) + diff1(:,:,:,0.5*(chisteps+1)))/(1i*dchi);
+
+% Analytic expresssion for comparison
 b_high_res = 0:0.05:4;
 J_ana = 2*exp(-0.5*b_high_res).*sinh(0.5*b_high_res)*kstar;
 
-% Mean
 figure(4)
 hold on; box on
 plot(b_high_res, J_ana, '--k', DisplayName="Analytic")
 for kk=1:length(m_list)
-    plot(b_list, J(1,:,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m =\;$",num2str(m_list(kk))))
+    plot(b_list_mean, J(1,:,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m =\;$",num2str(m_list(kk))))
 end % kk
 
 % Reference line

@@ -21,24 +21,37 @@ chisteps = 5; % Number of counting field steps
 m_list = [1,2,4,8];
 b_list = [0,1/5,8];
 dga_axis = 0:0.1:1.99*ga_av;
+dga_logspace = logspace(-3,log10(1.99*ga_av));
+% dga_logspace = [0,dga_logspace]; % Add zero-value to calculate constant term on its own
 
 
 %%% COMPUTE CUMULANTS %%%
 
 % Compute CGF
 [CGFarray, ~] = bigCGF(tau, ga_av, dchi, chisteps, dga_axis, b_list, m_list);
+[CGFloglog, ~] = bigCGF(tau, ga_av, dchi, chisteps, dga_logspace, b_list, m_list);
+
 
 % Variance
 diff2 = diff(CGFarray, 2, 4); % Second derivative of CGF
 S = diff2(:,:,:,0.5*(chisteps-1))/(1i*dchi)^2;
 
+diff2log = diff(CGFloglog, 2, 4); % Same thing on logarithmic scale
+Slog = diff2log(:,:,:,0.5*(chisteps-1))/(1i*dchi)^2;
+
 % Skewness - use average of two central values for odd cumulants
 diff3 = diff(CGFarray, 3, 4); % Third derivative of CGF
 C3 = 0.5*(diff3(:,:,:,0.5*(chisteps-3)) + diff3(:,:,:,0.5*(chisteps-1)))/(1i*dchi)^3;
 
+diff3log = diff(CGFloglog, 3, 4); % Third derivative of CGF
+C3log = 0.5*(diff3log(:,:,:,0.5*(chisteps-3)) + diff3log(:,:,:,0.5*(chisteps-1)))/(1i*dchi)^3;
+
 % Kurtosis
 diff4 = diff(CGFarray, 4, 4); % Fourth derivative of CGF
 C4 = diff4(:,:,:,0.5*(chisteps-3))/(1i*dchi)^4;
+
+diff4log = diff(CGFloglog, 4, 4); % Fourth derivative of CGF
+C4log = diff4log(:,:,:,0.5*(chisteps-3))/(1i*dchi)^4;
 
 
 %%% PLOT CUMULANTS %%%
@@ -80,9 +93,8 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
         xlabel("$\Delta\gamma$", Interpreter="latex")
 %         lowline.LabelHorizontalAlignment = "Left";
 %         highline.LabelHorizontalAlignment = "Left";
-    elseif jj==2
-        legend(Interpreter="latex", Location="southwest")
-    end % cases
+         legend(Interpreter="latex", Location="southwest")
+    end % case
 
     set(gca, fontsize=14)
 
@@ -90,6 +102,20 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
     yl = ylim;
     xl = xlim;
     text(0.95*xl(1) + 0.05*xl(2), 0.1*yl(1) + 0.9*yl(2), strcat(lettlist(jj-1),"$b=\;$",num2str(b)), Interpreter="latex", FontSize=14);
+    
+    % Plot on a log-log scale in an inset (panel (a) low bias only)
+    if jj==2 % Inset
+        axes('Position', [.17 .62 .23 .15]); hold on; box on
+        for kk=1:length(m_list)
+            plot(dga_logspace, Slog(:, jj, kk)-S(1,jj,kk), mrkrlist(kk), Color=colourlist(kk), MarkerSize=10)
+        end % kk
+        xlim([1e-2,1]);
+        text(0.012, 10^(-0.4),"$\langle\langle J^2\rangle\rangle-\langle\langle J^2\rangle\rangle|_{\Delta\gamma=0}$",Interpreter="latex",FontSize=10)
+        set(gca, Fontsize=10)
+        set(gca, 'XScale', 'log')
+        set(gca, 'YScale', 'log')
+    end % Inset
+
 end % jj
 
 % Skenwness
@@ -124,15 +150,28 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
         xlabel("$\Delta\gamma$", Interpreter="latex")
 %         lowline.LabelHorizontalAlignment = "Left";
 %         highline.LabelHorizontalAlignment = "Left";
-    elseif jj==2
         legend(Interpreter="latex", Location="southwest")
-    end % cases
+    end % case
     set(gca, fontsize=14)
 
     % Label subplot with bias value
     yl = ylim;
     xl = xlim;
     text(0.95*xl(1) + 0.05*xl(2), 0.1*yl(1) + 0.9*yl(2), strcat(lettlist(jj-1),"$b=\;$",num2str(b)), Interpreter="latex", FontSize=14);
+    
+    % Plot on a log-log scale in an inset (panel (a) low bias only)
+    if jj==2 % Inset
+        axes('Position', [.17 .62 .23 .15]); hold on; box on
+        for kk=1:length(m_list)
+            plot(dga_logspace, C3log(:, jj, kk)-C3(1,jj,kk), mrkrlist(kk), Color=colourlist(kk), MarkerSize=4)
+        end % kk
+        xlim([1e-2,1]);
+        text(0.012, 10^(-0.4),"$\langle\langle J^3\rangle\rangle-\langle\langle J^3\rangle\rangle|_{\Delta\gamma=0}$",Interpreter="latex",FontSize=10.5)
+        set(gca, Fontsize=10)
+        set(gca, 'XScale', 'log')
+        set(gca, 'YScale', 'log')
+    end % Inset
+
 end % jj
 
 % Kurtosis
@@ -162,7 +201,6 @@ for jj=1:length(b_list) % Exclude zero bias case - no block length or dga depend
     xlabel("$\Delta\gamma$", Interpreter="latex")
     if jj==1
         ylabel("$\langle\langle J^4\rangle\rangle$",Interpreter="latex")
-        legend(Interpreter="latex", Location="northwest")
         lowline.LabelHorizontalAlignment = "Left";
         highline.LabelHorizontalAlignment = "Left";
         ylim([0, 80])
@@ -170,6 +208,7 @@ for jj=1:length(b_list) % Exclude zero bias case - no block length or dga depend
         lowline.LabelHorizontalAlignment = "Left";
         highline.LabelHorizontalAlignment = "Left";
     elseif jj==3
+        legend(Interpreter="latex", Location="southeast")
         ylim([0, 9.5*kstar])
     end % case
 
@@ -179,6 +218,19 @@ for jj=1:length(b_list) % Exclude zero bias case - no block length or dga depend
     yl = ylim;
     xl = xlim;
     text(0.95*xl(1) + 0.05*xl(2), 0.08*yl(1) + 0.92*yl(2), strcat(lettlist(jj),"$b=\;$",num2str(b)), Interpreter="latex", FontSize=14);
+
+    % Plot on a log-log scale in an inset (panel (a) low bias only)
+    if jj==1 % Inset
+        axes('Position', [.17 .62 .23 .15]); hold on; box on
+        for kk=1:length(m_list)
+            plot(dga_logspace, C4log(:, jj, kk)-C4(1,jj,kk), mrkrlist(kk), Color=colourlist(kk), MarkerSize=4)
+        end % kk
+        xlim([1e-2,1]);
+        text(0.012, 10^(-0.4),"$\langle\langle J^4\rangle\rangle-\langle\langle J^4\rangle\rangle|_{\Delta\gamma=0}$",Interpreter="latex",FontSize=10)
+        set(gca, Fontsize=10)
+        set(gca, 'XScale', 'log')
+        set(gca, 'YScale', 'log')
+    end % Inset
 
 end % jj
 

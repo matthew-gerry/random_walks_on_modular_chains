@@ -41,10 +41,12 @@
 function [Lchi, k, k_r, chi] = diffusionLchi(nA,nB,bias,ga_av,dga,tau,dchi,chisteps)
 
     % Parameter checks - break function execution if invalid
-    if rem(chisteps,2)==0 || chisteps < 3
-        error('chisteps argument must be an odd integer, 3 or greater');
+    if rem(chisteps,2)==0 || chisteps<1
+        error('chisteps argument must be a positive odd integer');
     elseif nA==0 || nB==0
         error('Trivial case - use diffusionLchi function only when nA and nB are both nonzero');
+    elseif chisteps < 3
+        warning('chisteps argument set to 1 - returning the bare rate matrix')
     end
     
     bias_ratio = exp(bias); % Ratio of forward to reverse rates

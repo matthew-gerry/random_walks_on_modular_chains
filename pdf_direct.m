@@ -22,19 +22,16 @@ function [PDF, sites, n_av, v_av, D_av] = pdf_direct(mA,mB,bias,ga_av,dga,tau,nu
 
     PDF = zeros(numsites,length(time)); % Pre-allocate time-series of prob dist
     
-    t = repmat(reshape(time,[1,1,mA+mB]),length(time));
-    PDF = expm(repmat(L,[1,1,length(time)]).*t)*repmat(p0,[1,1,length(time)]);
-
-%     for ii=1:length(time)
-%         t = time(ii);
-%         PDF(:,ii) = expm(L*t)*p0;
-%     end
+    for ii=1:length(time)
+        t = time(ii);
+        PDF(:,ii) = expm(L*t)*p0;
+    end
 
     % Statistics of n 
     dpdt = L*PDF;
     
-    n_av = sum(PDF.*repmat(n',[1,length(time)]));
-    v_av = sum(dpdt.*repmat(n',[1,length(time)]));
-    D_av = 0.5*(sum(dpdt.*repmat((n.^2)',[1,length(time)])) - 2*n_av.*v_av);
+    n_av = sum(PDF.*repmat(sites',[1,length(time)]));
+    v_av = sum(dpdt.*repmat(sites',[1,length(time)]));
+    D_av = 0.5*(sum(dpdt.*repmat((sites.^2)',[1,length(time)])) - 2*n_av.*v_av);
 
 end % function

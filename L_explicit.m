@@ -8,7 +8,7 @@
 
 % Matthew Gerry, April 2023
 
-function [L, sites] = L_explicit(mA, mB, bias, ga_av, dga, tau, numsites)
+function [L, sites, block_types] = L_explicit(mA, mB, bias, ga_av, dga, tau, numsites)
     
     if numsites<=mA+mB
         warning("chain length is shorter than one period of the rate variations.")
@@ -18,7 +18,7 @@ function [L, sites] = L_explicit(mA, mB, bias, ga_av, dga, tau, numsites)
     k_r = k*exp(-bias); % Reverse rates
     
     sites = (1:numsites) - 0.5*(numsites+1); % Just an array of the site labels, from -(numsites-1)/2 to (numsites-1)/2
-    block_types = 2 - (rem(sites+0.5*(numsites+1),mA+mB)==0 | rem(sites+0.5*(numsites+1),mA+mB)>mA); % 1 for sites in block type A, 2 if in B
+    block_types = 1 + ( rem(rem(sites,mA+mB)+mA+mB,mA+mB)>=mA); % 1 for sites in block type A, 2 if in B
     
     L = zeros(numsites); % Pre-allocate rate matrix
     
@@ -33,8 +33,11 @@ function [L, sites] = L_explicit(mA, mB, bias, ga_av, dga, tau, numsites)
     % Fill in remaining matrix elements
     L(1,2) = k_r(block_types(1));
     L(numsites, numsites-1) = k(block_types(numsites-1));
-    
-    L(1,1) = -sum(L(:,1)); % Reflective boundaries
+
+    L(2,1) = 0; L(numsites-1, numsites)=0;
+
+    % Populate the last two diagonals
+    L(1,1) = -k(block_types(1));
     L(numsites, numsites) = -sum(L(:, numsites));
 
 end % function

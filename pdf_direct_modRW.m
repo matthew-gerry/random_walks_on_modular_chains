@@ -13,17 +13,21 @@ tau = 1.0; % 1/s, "tunnel coupling"
 ga_av = 1.0; % 1/s, average "decoherence rate"
 dga = 1.0; % 1/s, difference between decoherence rates
 
-m = 2; % Segment length
-b = 0.2; % Bias
+m = 4; % Segment length
+b = 0.5; % Bias
+% b  = -log((ga_av-0.5*dga)/(ga_av+0.5*dga));
 
-numsites = 101; % Total number of sites
+
+numsites = 201; % Total number of sites
 p0 = zeros([numsites,1]); p0((numsites+1)/2) = 1; % Initial state
 
 % Calculate the rate matrix for this random walk
-[L, n] = L_explicit(m,m,b,ga_av,dga,tau,numsites);
+[L, n, block_types] = L_explicit(m,m,b,ga_av,dga,tau,numsites);
 
 %%% SOLVE MASTER EQUATION NUMERICALLY %%%
-time = 0:0.1:100;
+dt = 0.1;
+tmax = 100;
+time = 0:dt:tmax;
 
 p = zeros(numsites,length(time)); % Pre-allocate time-series of prob dist
 
@@ -40,13 +44,12 @@ plot(n, p(:,400))
 plot(n, p(:,800))
 hold off
 
-
 %%% STATISTICS OF n %%% 
 dpdt = L*p;
 
 n_av = sum(p.*repmat(n',[1,length(time)]));
 v_av = sum(dpdt.*repmat(n',[1,length(time)]));
-D_av = sum(dpdt.*repmat((n.^2)',[1,length(time)]));
+D_av = sum(dpdt.*repmat((n.^2)',[1,length(time)])) - 2*n_av.*v_av;
 
 figure
 plot(time, n_av)

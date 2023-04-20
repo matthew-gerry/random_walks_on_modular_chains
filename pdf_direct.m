@@ -6,7 +6,7 @@
 
 % Matthew Gerry, April 2023
 
-function [PDF, sites, n_av, v_av, D_av] = pdf_direct(mA,mB,bias,ga_av,dga,tau,numsites,dt,tmax)
+function [PDF, sites, n_av, v_av, D_av, C3, C4] = pdf_direct(mA,mB,bias,ga_av,dga,tau,numsites,dt,tmax)
 
     if rem(numsites,2)==0
         Error("For symmetry, please choose an odd value for the argument numsites")
@@ -31,8 +31,22 @@ function [PDF, sites, n_av, v_av, D_av] = pdf_direct(mA,mB,bias,ga_av,dga,tau,nu
     % Statistics of n 
     dpdt = L*PDF;
     
+    % Mean
     n_av = sum(PDF.*repmat(sites',[1,length(time)]));
-    v_av = sum(dpdt.*repmat(sites',[1,length(time)]));
+    v_av = sum(dpdt.*repmat(sites',[1,length(time)])); % Mean "velocity"
+    
+    % Diffusion coefficient
+    [n_av_grid, sites_grid] = meshgrid(n_av,sites);
+
+    S = sum(PDF.*(sites_grid-n_av_grid).^2);
     D_av = 0.5*(sum(dpdt.*repmat((sites.^2)',[1,length(time)])) - 2*n_av.*v_av);
+
+    % Skewness   
+    skw = sum(PDF.*(sites_grid-n_av_grid).^3);
+    C3 = skw./time; % Scaled skewness
+
+    % Kurtosis
+    krt = sum(PDF.*(sites_grid-n_av_grid).^4) - 3*S.^2;
+    C4 = krt./time; % Scaled kurtosis
 
 end % function

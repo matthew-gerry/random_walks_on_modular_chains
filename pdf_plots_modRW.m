@@ -11,13 +11,13 @@ tau = 1.0; % 1/s, tunneling element
 ga_av = 1.0; % 1/s, average decoherence rate
 dga = 1.0; % 1/s, difference between decoherence rates
 
-b = 4; % Bias
+b = 0.5; % Bias
 m_list = [1,2,4]; % Segment length (even segments)
 
 % Simulation parameters
-numsites = 1001; % Number of sites
-dt = 1; % s, time step
-tmax = 600; % s, max time
+numsites = 151; % Number of sites
+dt = 0.1; % s, time step
+tmax = 60; % s, max time
 time = 0:dt:tmax; % time array
 
 
@@ -45,7 +45,7 @@ end
 
 %%% PLOT PROBABILITY DISTRIBUTIONS %%%
 
-snapshot_times = [50, 300, 600]; % Specific indices of time array at which to show PDF
+snapshot_times = floor((tmax/dt)*[0.1, 0.5, 0.99]); % Specific indices of time array at which to show PDF
 
 figure(1)
 

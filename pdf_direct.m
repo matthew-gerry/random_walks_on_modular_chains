@@ -16,6 +16,7 @@ function [PDF, sites, n_av, v_av, D_av] = pdf_direct(mA,mB,bias,ga_av,dga,tau,nu
 
     % Calculate the rate matrix for this random walk
     [L, sites, ~] = L_explicit(mA,mB,bias,ga_av,dga,tau,numsites);
+    [V,D] = eig(L); % Diagonalize L to calculate PDF faster
 
     % Solve master equation numerically
     time = 0:dt:tmax;
@@ -24,7 +25,7 @@ function [PDF, sites, n_av, v_av, D_av] = pdf_direct(mA,mB,bias,ga_av,dga,tau,nu
     
     for ii=1:length(time)
         t = time(ii);
-        PDF(:,ii) = expm(L*t)*p0;
+        PDF(:,ii) = V*expm(D*t)*(V\p0); % Exponential of L*t acting on p0
     end
 
     % Statistics of n 

@@ -11,13 +11,13 @@ tau = 1.0; % 1/s, tunneling element
 ga_av = 1.0; % 1/s, average decoherence rate
 dga = 1.0; % 1/s, difference between decoherence rates
 
-b = 0.5; % Bias
-m_list = [1,2,4]; % Segment length (even segments)
+b = 0.2; % Bias
+m_list = [1,2,8]; % Segment length (even segments)
 
 % Simulation parameters
-numsites = 151; % Number of sites
+numsites = 121; % Number of sites
 dt = 0.1; % s, time step
-tmax = 60; % s, max time
+tmax = 80; % s, max time
 time = 0:dt:tmax; % time array
 
 
@@ -43,29 +43,50 @@ for ii=1:length(m_list)
 end
 
 
-%%% PLOT PROBABILITY DISTRIBUTIONS %%%
+%% % PLOT PROBABILITY DISTRIBUTIONS %%%
 
-snapshot_times = floor((tmax/dt)*[0.1, 0.5, 0.99]); % Specific indices of time array at which to show PDF
+% snapshot_times = floor((tmax/dt)*[0.25, 0.6, 0.99]); % Specific indices of time array at which to show PDF
+snapshot_times = [200, 450, 800];
+
+colourlist = ["#0072BD", "#D95319", "#77AC30","#7E2F8E"];
+lettlist = ["(a) ", "(b) ", "(c) ", "(d) "];
 
 figure(1)
 
 % Plot the PDF for the homogeneous walk
-subplot(1,length(m_list)+1,1); box on; hold on
-for jj=snapshot_times
-    plot(sites, PDF_hom(:,jj));
+subplot(2,2,1); box on; hold on
+for jj=1:length(snapshot_times)
+    t_snap = snapshot_times(jj);
+    bar(sites, PDF_hom(:,t_snap), facecolor=colourlist(jj), facealpha=0.6, EdgeColor="none",DisplayName=strcat("$t=\;$",num2str(t_snap),"$\;s$"));
 end % jj
+ylim([0, 1.2*max(PDF_hom(:,snapshot_times(1)))])
+yl = ylim; xl = xlim;
+text(0.9*xl(1) + 0.1*xl(2), 0.1*yl(1) + 0.9*yl(2), "(a) Homogeneous", FontSize=14, Interpreter="latex")
+ylabel("$P_n$",Interpreter="latex")
+legend(Interpreter="latex", Location="southwest")
+set(gca, fontsize=14)
+hold off
 
 % Plot the PDF for the modular walks
 for ii=1:length(m_list)
-    subplot(1,length(m_list)+1,ii+1); box on; hold on
-    for jj=snapshot_times
-        plot(sites, bigPDF(:,jj,ii));
+    subplot(2,2,ii+1); box on; hold on
+    for jj=1:length(snapshot_times)
+        t_snap = snapshot_times(jj);
+        bar(sites, bigPDF(:,t_snap,ii), facecolor=colourlist(jj), facealpha=0.6, EdgeColor="none");
     end % jj
+    ylim([0, 1.2*max(PDF_hom(:,snapshot_times(1)))])
+    yl = ylim; xl = xlim;
+    if ii>1
+        xlabel("$n$",Interpreter="latex")
+        if rem(ii,2)==0; ylabel("$P_n$",Interpreter="latex"); end
+    end
+    text(0.9*xl(1) + 0.1*xl(2), 0.1*yl(1) + 0.9*yl(2), strcat(lettlist(ii+1),"$m=\;$",num2str(m_list(ii))), FontSize=14, Interpreter="latex")
+    set(gca, fontsize=14)
     hold off
 end % ii
 
 
-%%% PLOT CUMULANTS OVER TIME %%%
+%% % PLOT CUMULANTS OVER TIME %%%
 
 figure(2)
 

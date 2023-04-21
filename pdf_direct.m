@@ -11,21 +11,28 @@ function [PDF, sites, n_av, v_av, D_av, C3, C4] = pdf_direct(mA,mB,bias,ga_av,dg
     if rem(numsites,2)==0
         Error("For symmetry, please choose an odd value for the argument numsites")
     end
-
+    
     p0 = zeros([numsites,1]); p0((numsites+1)/2) = 1; % Initial state (1 at central site)
 
     % Calculate the rate matrix for this random walk
     [L, sites, ~] = L_explicit(mA,mB,bias,ga_av,dga,tau,numsites);
-    [V,D] = eig(L); % Diagonalize L to calculate PDF faster
 
     % Solve master equation numerically
     time = 0:dt:tmax;
 
     PDF = zeros(numsites,length(time)); % Pre-allocate time-series of prob dist
     
-    for ii=1:length(time)
-        t = time(ii);
-        PDF(:,ii) = V*expm(D*t)*(V\p0); % Exponential of L*t acting on p0
+    if bias<=0.5 % At low bias, diagonalize L to calculate PDF faster
+        [V,D] = eig(L);
+        for ii=1:length(time)
+            t = time(ii);
+            PDF(:,ii) = real(V*expm(D*t)*(V\p0)); % Exponential of L*t acting on p0
+        end
+    else % Except don't do this at high bias - leads to strange numerical effects since L is near singular
+        for ii=1:length(time)
+            t = time(ii);
+            PDF(:,ii) = expm(L*t)*p0; % Exponential of L*t acting on p0
+        end
     end
 
     % Statistics of n 

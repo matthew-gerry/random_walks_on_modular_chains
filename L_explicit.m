@@ -15,7 +15,11 @@ function [L, sites, block_types] = L_explicit(mA, mB, bias, ga_av, dga, tau, num
     end % warning
 
     k = tau^2./[ga_av + 0.5*dga, ga_av - 0.5*dga]; % Forward rates based on differing gamma
-    k_r = k*exp(-bias); % Reverse rates
+    if bias==Inf
+        k_r = [0,0]; % Suppress reverse transitions in infinite bias limit
+    else
+        k_r = k*exp(-bias); % Reverse rates
+    end
     
     sites = (1:numsites) - 0.5*(numsites+1); % Just an array of the site labels, from -(numsites-1)/2 to (numsites-1)/2
     block_types = 1 + ( rem(rem(sites,mA+mB)+mA+mB,mA+mB)>=mA); % 1 for sites in block type A, 2 if in B

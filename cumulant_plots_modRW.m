@@ -88,7 +88,7 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
     ylim([0.95*kstar, 1.15*yl(2)])
     xlim([0,max(dga_axis)])
 
-    ylabel("$\langle\langle J^2\rangle\rangle$",Interpreter="latex")
+    ylabel("$\mathcal{C}_2$",Interpreter="latex")
     if jj==3
         xlabel("$\Delta\gamma$", Interpreter="latex")
 %         lowline.LabelHorizontalAlignment = "Left";
@@ -110,7 +110,7 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
             plot(dga_logspace, Slog(:, jj, kk)-S(1,jj,kk), mrkrlist(kk), Color=colourlist(kk), MarkerSize=10)
         end % kk
         xlim([1e-2,1]);
-        text(0.012, 10^(-0.4),"$\langle\langle J^2\rangle\rangle-\langle\langle J^2\rangle\rangle|_{\Delta\gamma=0}$",Interpreter="latex",FontSize=10)
+        text(0.012, 10^(-0.4),"$\mathcal{C}_2-\mathcal{C}_2|_{\Delta\gamma=0}$",Interpreter="latex",FontSize=10)
         set(gca, Fontsize=10)
         set(gca, 'XScale', 'log')
         set(gca, 'YScale', 'log')
@@ -145,7 +145,7 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
     ylim([0, 1.15*yl(2)])
     xlim([0,max(dga_axis)])
 
-    ylabel("$\langle\langle J^3\rangle\rangle$",Interpreter="latex")
+    ylabel("$\mathcal{C}_3$",Interpreter="latex")
     if jj==3
         xlabel("$\Delta\gamma$", Interpreter="latex")
 %         lowline.LabelHorizontalAlignment = "Left";
@@ -166,7 +166,7 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
             plot(dga_logspace, C3log(:, jj, kk)-C3(1,jj,kk), mrkrlist(kk), Color=colourlist(kk), MarkerSize=4)
         end % kk
         xlim([1e-2,1]);
-        text(0.012, 10^(-0.4),"$\langle\langle J^3\rangle\rangle-\langle\langle J^3\rangle\rangle|_{\Delta\gamma=0}$",Interpreter="latex",FontSize=10.5)
+        text(0.012, 10^(-0.4),"$\mathcal{C}_3-\mathcal{C}_3|_{\Delta\gamma=0}$",Interpreter="latex",FontSize=10.5)
         set(gca, Fontsize=10)
         set(gca, 'XScale', 'log')
         set(gca, 'YScale', 'log')
@@ -200,7 +200,7 @@ for jj=1:length(b_list) % Exclude zero bias case - no block length or dga depend
     xlim([0,max(dga_axis)])
     xlabel("$\Delta\gamma$", Interpreter="latex")
     if jj==1
-        ylabel("$\langle\langle J^4\rangle\rangle$",Interpreter="latex")
+        ylabel("$\mathcal{C}_4$",Interpreter="latex")
         lowline.LabelHorizontalAlignment = "Left";
         highline.LabelHorizontalAlignment = "Left";
         ylim([0, 80])
@@ -226,7 +226,7 @@ for jj=1:length(b_list) % Exclude zero bias case - no block length or dga depend
             plot(dga_logspace, C4log(:, jj, kk)-C4(1,jj,kk), mrkrlist(kk), Color=colourlist(kk), MarkerSize=4)
         end % kk
         xlim([1e-2,1]);
-        text(0.012, 10^(-0.4),"$\langle\langle J^4\rangle\rangle-\langle\langle J^4\rangle\rangle|_{\Delta\gamma=0}$",Interpreter="latex",FontSize=10)
+        text(0.012, 10^(-0.4),"$\mathcal{C}_4-\mathcal{C}_4|_{\Delta\gamma=0}$",Interpreter="latex",FontSize=10)
         set(gca, Fontsize=10)
         set(gca, 'XScale', 'log')
         set(gca, 'YScale', 'log')
@@ -265,7 +265,7 @@ lowline = yline(kstar, ':k', "$k^*$", Interpreter="latex", FontSize=14);
 lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
 
 xlabel("$b$",Interpreter="latex")
-ylabel("$\langle J\rangle$",Interpreter="latex")
+ylabel("$\mathcal{C}_1$",Interpreter="latex")
 legend(Location="southeast", Interpreter="latex")
 set(gca, fontsize=14)
 ylim([0,1.12*kstar])

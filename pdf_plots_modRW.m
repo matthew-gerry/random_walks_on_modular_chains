@@ -88,7 +88,7 @@ plot(time, n_av_hom./time, '--k', DisplayName="Homogeneous")
 for ii=1:length(m_list)
     plot(time,big_n_av(:,ii)./time',color=colourlist(ii),DisplayName=strcat("$m=\;$",num2str(m_list(ii))))
 end % ii
-ylabel("$\langle J\rangle$", Interpreter="latex")
+ylabel("$\mathcal{C}_1$", Interpreter="latex")
 legend(Interpreter="latex", Location="southeast")
 set(gca,fontsize=14)
 hold off
@@ -100,7 +100,7 @@ for ii=1:length(m_list)
     plot(time,2*big_D_av(:,ii),color=colourlist(ii))
 end % ii
 
-ylabel("$\langle\langle J^2\rangle\rangle$", Interpreter="latex")
+ylabel("$\mathcal{C}_2$", Interpreter="latex")
 set(gca,fontsize=14)
 hold off
 
@@ -110,7 +110,7 @@ plot(time, C3_hom, '--k')
 for ii=1:length(m_list)
     plot(time,big_C3(:,ii),color=colourlist(ii))
 end % ii
-ylabel("$\langle\langle J^3\rangle\rangle$", Interpreter="latex")
+ylabel("$\mathcal{C}_3$", Interpreter="latex")
 xlabel("$t (s)$", Interpreter="latex")
 set(gca,fontsize=14)
 hold off
@@ -121,7 +121,7 @@ plot(time, C4_hom, '--k')
 for ii=1:length(m_list)
     plot(time,big_C4(:,ii),color=colourlist(ii))
 end % ii
-ylabel("$\langle\langle J^4\rangle\rangle$", Interpreter="latex")
+ylabel("$\mathcal{C}_4$", Interpreter="latex")
 xlabel("$t (s)$", Interpreter="latex")
 set(gca,fontsize=14)
 hold off

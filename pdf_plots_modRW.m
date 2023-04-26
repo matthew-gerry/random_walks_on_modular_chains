@@ -15,9 +15,9 @@ b = 8; % Bias
 m_list = [1,2,4,8]; % Segment length (even segments)
 
 % Simulation parameters
-numsites = 281; % Number of sites
+numsites = 321; % Number of sites
 dt = 0.2; % s, time step
-tmax = 80; % s, max time
+tmax = 120; % s, max time
 time = 0:dt:tmax; % time array
 
 
@@ -48,7 +48,7 @@ for ii=1:length(m_list)
 end
 
 
-%%% PLOT PROBABILITY DISTRIBUTIONS %%%
+%% % PLOT PROBABILITY DISTRIBUTIONS %%%
 
 snapshot_times = [50, 175, 400];  % Specific indices of time array at which to show PDF (arb.)
 
@@ -78,7 +78,9 @@ for ii=1:length(m_list)
 end % ii
 
 
-%%% PLOT CUMULANTS OVER TIME %%%
+%% % PLOT CUMULANTS OVER TIME %%%
+
+ls_list = ["-","--",":","-."];
 
 figure(2)
 
@@ -86,8 +88,9 @@ figure(2)
 subplot(2,2,1); box on; hold on;
 plot(time, n_av_hom./time, '--k', DisplayName="Homogeneous")
 for ii=1:length(m_list)
-    plot(time,big_n_av(:,ii)./time',color=colourlist(ii),DisplayName=strcat("$m=\;$",num2str(m_list(ii))))
+    plot(time,big_n_av(:,ii)./time', ls_list(ii), color=colourlist(ii), linewidth=1.5, DisplayName=strcat("$m=\;$",num2str(m_list(ii))))
 end % ii
+xlim([0, 100])
 ylabel("$\mathcal{C}_1$", Interpreter="latex")
 legend(Interpreter="latex", Location="southeast")
 set(gca,fontsize=14)
@@ -97,9 +100,9 @@ hold off
 subplot(2,2,2); box on; hold on;
 plot(time, 2*D_av_hom, '--k')
 for ii=1:length(m_list)
-    plot(time,2*big_D_av(:,ii),color=colourlist(ii))
+    plot(time,2*big_D_av(:,ii), ls_list(ii), color=colourlist(ii), linewidth=1.5)
 end % ii
-
+xlim([0, 100])
 ylabel("$\mathcal{C}_2$", Interpreter="latex")
 set(gca,fontsize=14)
 hold off
@@ -108,8 +111,9 @@ hold off
 subplot(2,2,3); box on; hold on;
 plot(time, C3_hom, '--k')
 for ii=1:length(m_list)
-    plot(time,big_C3(:,ii),color=colourlist(ii))
+    plot(time,big_C3(:,ii), ls_list(ii), color=colourlist(ii), linewidth=1.5)
 end % ii
+xlim([0, 100])
 ylabel("$\mathcal{C}_3$", Interpreter="latex")
 xlabel("$t (s)$", Interpreter="latex")
 set(gca,fontsize=14)
@@ -119,8 +123,9 @@ hold off
 subplot(2,2,4); box on; hold on;
 plot(time, C4_hom, '--k')
 for ii=1:length(m_list)
-    plot(time,big_C4(:,ii),color=colourlist(ii))
+    plot(time,big_C4(:,ii), ls_list(ii),color=colourlist(ii), linewidth=1.5)
 end % ii
+xlim([0, 100])
 ylabel("$\mathcal{C}_4$", Interpreter="latex")
 xlabel("$t (s)$", Interpreter="latex")
 set(gca,fontsize=14)

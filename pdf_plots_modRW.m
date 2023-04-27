@@ -11,11 +11,11 @@ tau = 1; % 1/s, tunneling element
 ga_av = 1.0; % 1/s, average decoherence rate
 dga = 1.0; % 1/s, difference between decoherence rates
 
-b = 8; % Bias
+b = 0.2; % Bias
 m_list = [1,2,4,8]; % Segment length (even segments)
 
 % Simulation parameters
-numsites = 321; % Number of sites
+numsites = 161; % Number of sites
 dt = 0.2; % s, time step
 tmax = 120; % s, max time
 time = 0:dt:tmax; % time array
@@ -47,13 +47,15 @@ for ii=1:length(m_list)
     big_C4(:,ii) = C4;
 end
 
-
-%% % PLOT PROBABILITY DISTRIBUTIONS %%%
-
-snapshot_times = [50, 175, 400];  % Specific indices of time array at which to show PDF (arb.)
-
+% Define some colours, linestyles, and labels for plotting
 colourlist = ["#0072BD", "#D95319", "#77AC30","#7E2F8E"];
 lettlist = ["(a) ", "(b) ", "(c) ", "(d) "];
+ls_list = ["-","--",":","-."];
+
+
+%%% PLOT PROBABILITY DISTRIBUTIONS %%%
+
+snapshot_times = [50, 175, 400];  % Specific indices of time array at which to show PDF (arb.)
 
 figure(1)
 
@@ -78,9 +80,7 @@ for ii=1:length(m_list)
 end % ii
 
 
-%% % PLOT CUMULANTS OVER TIME %%%
-
-ls_list = ["-","--",":","-."];
+%%% PLOT CUMULANTS OVER TIME %%%
 
 figure(2)
 

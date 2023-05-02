@@ -65,7 +65,7 @@ for ii=1:length(m_list)
     for jj=1:length(snapshot_times)
         t_snap = snapshot_times(jj);
         hom_curve = plot(sites, PDF_hom(:,t_snap), '-k', linewidth=0.2);
-        bar(sites, bigPDF(:,t_snap,ii), facecolor=colourlist(jj), facealpha=0.6, EdgeColor="none",DisplayName=strcat("$t=\;$",num2str(dt*t_snap),"$\;s$"));
+        bar(sites, bigPDF(:,t_snap,ii), facecolor=colourlist(jj), facealpha=0.6, EdgeColor="none",DisplayName=strcat("$t=\;$",num2str(dt*t_snap)));
         hom_curve.Annotation.LegendInformation.IconDisplayStyle = "off";
     end % jj
 %     xlim([-10,sites(end)]) % If high bias
@@ -115,7 +115,7 @@ for ii=1:length(m_list)
 end % ii
 xlim([0, 100])
 ylabel("$\mathcal{C}_3$", Interpreter="latex")
-xlabel("$t (s)$", Interpreter="latex")
+xlabel("$t$", Interpreter="latex")
 set(gca,fontsize=14)
 hold off
 
@@ -127,6 +127,6 @@ for ii=1:length(m_list)
 end % ii
 xlim([0, 100])
 ylabel("$\mathcal{C}_4$", Interpreter="latex")
-xlabel("$t (s)$", Interpreter="latex")
+xlabel("$t$", Interpreter="latex")
 set(gca,fontsize=14)
 hold off

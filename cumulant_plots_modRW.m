@@ -24,8 +24,15 @@ dga_axis = 0:0.1:1.99*ga_av;
 dga_logspace = logspace(-3,log10(1.99*ga_av));
 % dga_logspace = [0,dga_logspace]; % Add zero-value to calculate constant term on its own
 
+kstar = tau^2/ga_av; % Homogeneous rate for reference lines
 
-%%% COMPUTE CUMULANTS %%%
+% List markerstyles, colours, letters for plot formatting and labels
+mrkrlist = ['s', 'o', '^', 'x'];
+colourlist = ["#0072BD", "#D95319", "#77AC30","#7E2F8E"];
+lettlist = ["(a) ", "(b) ", "(c) "];
+
+
+%% % COMPUTE CUMULANTS %%%
 
 % Compute CGF
 [CGFarray, ~] = bigCGF(tau, ga_av, dchi, chisteps, dga_axis, b_list, m_list);
@@ -55,12 +62,6 @@ C4log = diff4log(:,:,:,0.5*(chisteps-3))/(1i*dchi)^4;
 
 
 %%% PLOT CUMULANTS %%%
-
-mrkrlist = ['s', 'o', '^', 'x'];
-colourlist = ["#0072BD", "#D95319", "#77AC30","#7E2F8E"];
-lettlist = ["(a) ", "(b) ", "(c) "];
-
-kstar = tau^2/ga_av; % Homogeneous rate for reference lines
 
 
 % Variance
@@ -234,22 +235,24 @@ for jj=1:length(b_list) % Exclude zero bias case - no block length or dga depend
 
 end % jj
 
-%% Plot mean current as a function of b
+%% Plot cumulants as a function of b
 
 % Choose one delta_gamma value and use more values in the b_list just to
 % make this plot
 
-b_list_mean = 0:0.2:4; % For mean vs b plot
-dga_axis_mean = 1.0; % For mean vs b plot
+b_list2 = 0:0.2:4; % For plots against b
+dga_axis2 = [0, 0.2, 1]; % For plots against b
 
 % Compute CGF
-[CGFarray_mean, ~] = bigCGF(tau, ga_av, dchi, chisteps, dga_axis_mean, b_list_mean, m_list);
+[CGFarray_b, ~] = bigCGF(tau, ga_av, dchi, chisteps, dga_axis2, b_list2, m_list);
+
+%%% MEAN %%%
 
 % Calculate mean numerically - use average of two central values
-diff1 = diff(CGFarray_mean, 1, 4); % First derivative of CGF
+diff1 = diff(CGFarray_b, 1, 4); % First derivative of CGF
 J = 0.5*(diff1(:,:,:,0.5*(chisteps-1)) + diff1(:,:,:,0.5*(chisteps+1)))/(1i*dchi);
 
-% Analytic expresssion for comparison
+% Analytic expresssion for mean for comparison
 b_high_res = 0:0.05:4;
 J_ana = 2*exp(-0.5*b_high_res).*sinh(0.5*b_high_res)*kstar;
 
@@ -257,7 +260,7 @@ figure(4)
 hold on; box on
 plot(b_high_res, J_ana, '--k', DisplayName="Analytic")
 for kk=1:length(m_list)
-    plot(b_list_mean, J(1,:,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m =\;$",num2str(m_list(kk))))
+    plot(b_list2, J(3,:,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m =\;$",num2str(m_list(kk))))
 end % kk
 
 % Reference line
@@ -270,4 +273,82 @@ legend(Location="southeast", Interpreter="latex")
 set(gca, fontsize=14)
 ylim([0,1.12*kstar])
 
+%%% HIGHER-ORDER CUMULANTS %%%
 
+% Get higher order cumulants
+% Variance
+diff2_b = diff(CGFarray_b, 2, 4); % Second derivative of CGF
+S_b = diff2_b(:,:,:,0.5*(chisteps-1))/(1i*dchi)^2;
+
+% Skewness - use average of two central values for odd cumulants
+diff3_b = diff(CGFarray_b, 3, 4); % Third derivative of CGF
+C3_b = 0.5*(diff3_b(:,:,:,0.5*(chisteps-3)) + diff3_b(:,:,:,0.5*(chisteps-1)))/(1i*dchi)^3;
+
+% Kurtosis
+diff4_b = diff(CGFarray_b, 4, 4); % Fourth derivative of CGF
+C4_b = diff4_b(:,:,:,0.5*(chisteps-3))/(1i*dchi)^4;
+
+% Plot variance
+figure(5)
+for jj=1:length(dga_axis2)
+    subplot(1,length(dga_axis2),jj); hold on; box on
+    for kk=1:length(m_list)
+        plot(b_list2, S_b(jj,:,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m =\;$",num2str(m_list(kk))))
+    end % kk
+    xlabel("$b$",Interpreter="latex")
+    if jj==1
+        ylabel("$\mathcal{C}_2$",Interpreter="latex")
+        legend(Location="southeast", Interpreter="latex")
+    end % case
+
+    % Label subplot with delta gamma value
+    yl = ylim;
+    xl = xlim;
+    text(0.95*xl(1) + 0.05*xl(2), 0.08*yl(1) + 0.92*yl(2), strcat(lettlist(jj),"$\Delta\gamma=\;$",num2str(dga_axis2(jj))), Interpreter="latex", FontSize=14);
+
+    set(gca, fontsize=14)
+    hold off
+end % jj
+
+% Plot skewness
+figure(6)
+for jj=1:length(dga_axis2)
+    subplot(1,length(dga_axis2),jj); hold on; box on
+    for kk=1:length(m_list)
+        plot(b_list2, C3_b(jj,:,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m =\;$",num2str(m_list(kk))))
+    end % kk
+    xlabel("$b$",Interpreter="latex")
+    if jj==1
+        ylabel("$\mathcal{C}_3$",Interpreter="latex")
+        legend(Location="southeast", Interpreter="latex")
+    end % case
+
+    % Label subplot with delta gamma value
+    yl = ylim;
+    xl = xlim;
+    text(0.95*xl(1) + 0.05*xl(2), 0.08*yl(1) + 0.92*yl(2), strcat(lettlist(jj),"$\Delta\gamma=\;$",num2str(dga_axis2(jj))), Interpreter="latex", FontSize=14);
+
+    set(gca, fontsize=14)
+    hold off
+end % jj
+
+figure(7)
+for jj=1:length(dga_axis2)
+    subplot(1,length(dga_axis2),jj); hold on; box on
+    for kk=1:length(m_list)
+        plot(b_list2, C4_b(jj,:,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m =\;$",num2str(m_list(kk))))
+    end % kk
+    xlabel("$b$",Interpreter="latex")
+    if jj==1
+        ylabel("$\mathcal{C}_4$",Interpreter="latex")
+        legend(Location="southeast", Interpreter="latex")
+    end % case
+
+    % Label subplot with delta gamma value
+    yl = ylim;
+    xl = xlim;
+    text(0.95*xl(1) + 0.05*xl(2), 0.08*yl(1) + 0.92*yl(2), strcat(lettlist(jj),"$\Delta\gamma=\;$",num2str(dga_axis2(jj))), Interpreter="latex", FontSize=14);
+
+    set(gca, fontsize=14)
+    hold off
+end % jj

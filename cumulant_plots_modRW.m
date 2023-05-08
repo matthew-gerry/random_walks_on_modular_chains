@@ -79,10 +79,12 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
     end % kk
     
     % Reference lines
-    lowline = yline(kstar, ':k', "$k^*$         ", Interpreter="latex", FontSize=14);
-    lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
-    highline = yline(2*kstar, ':k', "$2k^*$         ", Interpreter="latex", FontSize=14);
-    highline.Annotation.LegendInformation.IconDisplayStyle = "off";
+    if jj==3
+        lowline = yline(kstar, ':k', "$k^*$         ", Interpreter="latex", FontSize=14);
+        lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
+        highline = yline(2*kstar, ':k', "$2k^*$         ", Interpreter="latex", FontSize=14);
+        highline.Annotation.LegendInformation.IconDisplayStyle = "off";
+    end
 
     % Format subplot
     yl = ylim;
@@ -136,10 +138,12 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
     end % kk
     
     % Reference lines
-    lowline = yline(kstar, ':k', "$k^*$", Interpreter="latex", FontSize=14);
-    lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
-    highline = yline(4*kstar, ':k', "$4k^*$", Interpreter="latex", FontSize=14);
-    highline.Annotation.LegendInformation.IconDisplayStyle = "off";
+    if jj==3
+        lowline = yline(kstar, ':k', "$k^*$", Interpreter="latex", FontSize=14);
+        lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
+        highline = yline(4*kstar, ':k', "$4k^*$", Interpreter="latex", FontSize=14);
+        highline.Annotation.LegendInformation.IconDisplayStyle = "off";
+    end
 
     % Format subplot
     yl = ylim;
@@ -192,10 +196,12 @@ for jj=1:length(b_list) % Exclude zero bias case - no block length or dga depend
     end % kk
     
     % Reference lines
-    lowline = yline(kstar, ':k', "$k^*$", Interpreter="latex", FontSize=14);
-    lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
-    highline = yline(8*kstar, ':k', "$8k^*$", Interpreter="latex", FontSize=14);
-    highline.Annotation.LegendInformation.IconDisplayStyle = "off";
+    if jj==3
+        lowline = yline(kstar, ':k', "$k^*$", Interpreter="latex", FontSize=14);
+        lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
+        highline = yline(8*kstar, ':k', "$8k^*$", Interpreter="latex", FontSize=14);
+        highline.Annotation.LegendInformation.IconDisplayStyle = "off";
+    end
 
     % Format subplot
     xlim([0,max(dga_axis)])

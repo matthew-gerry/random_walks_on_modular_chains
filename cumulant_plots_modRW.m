@@ -20,6 +20,7 @@ chisteps = 5; % Number of counting field steps
 % Varying parameters
 m_list = [1,2,4,8];
 b_list = [0,1/5,8];
+b_axis = 0:0.25:5; dga_vs_b = 1.5; % For plot of variance against b
 dga_axis = 0:0.1:1.99*ga_av;
 dga_logspace = logspace(-3,log10(1.99*ga_av));
 % dga_logspace = [0,dga_logspace]; % Add zero-value to calculate constant term on its own
@@ -32,12 +33,12 @@ colourlist = ["#0072BD", "#D95319", "#77AC30","#7E2F8E"];
 lettlist = ["(a) ", "(b) ", "(c) "];
 
 
-%% % COMPUTE CUMULANTS %%%
+%%% COMPUTE CUMULANTS %%%
 
 % Compute CGF
 [CGFarray, ~] = bigCGF(tau, ga_av, dchi, chisteps, dga_axis, b_list, m_list);
 [CGFloglog, ~] = bigCGF(tau, ga_av, dchi, chisteps, dga_logspace, b_list, m_list);
-
+[CGF_vs_b, ~] = bigCGF(tau, ga_av, dchi, chisteps, dga_vs_b, b_axis, m_list);
 
 % Variance
 diff2 = diff(CGFarray, 2, 4); % Second derivative of CGF
@@ -45,6 +46,9 @@ S = diff2(:,:,:,0.5*(chisteps-1))/(1i*dchi)^2;
 
 diff2log = diff(CGFloglog, 2, 4); % Same thing on logarithmic scale
 Slog = diff2log(:,:,:,0.5*(chisteps-1))/(1i*dchi)^2;
+
+diff2_vs_b = diff(CGF_vs_b, 2, 4); % Same thing with different param ranges
+S_vs_b = diff2_vs_b(:,:,:,0.5*(chisteps-1))/(1i*dchi)^2;
 
 % Skewness - use average of two central values for odd cumulants
 diff3 = diff(CGFarray, 3, 4); % Third derivative of CGF
@@ -96,7 +100,6 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
         xlabel("$\Delta\gamma$", Interpreter="latex")
 %         lowline.LabelHorizontalAlignment = "Left";
 %         highline.LabelHorizontalAlignment = "Left";
-         legend(Interpreter="latex", Location="southwest")
     end % case
 
     set(gca, fontsize=14)
@@ -106,22 +109,40 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
     xl = xlim;
     text(0.95*xl(1) + 0.05*xl(2), 0.1*yl(1) + 0.9*yl(2), strcat(lettlist(jj-1),"$b=\;$",num2str(b)), Interpreter="latex", FontSize=14);
     
+    hold off
+
     % Plot on a log-log scale in an inset (panel (a) low bias only)
-    if jj==2 % Inset
+    if jj==2 % Inset (loglog) and legend
+        legend(Interpreter="latex", Location="southeast")
         axes('Position', [.17 .62 .23 .15]); hold on; box on
         for kk=1:length(m_list)
-            plot(dga_logspace, Slog(:, jj, kk)-S(1,jj,kk), mrkrlist(kk), Color=colourlist(kk), MarkerSize=10)
+            plot(dga_logspace, Slog(:, jj, kk)-S(1,jj,kk), mrkrlist(kk), Color=colourlist(kk), MarkerSize=8)
         end % kk
         xlim([1e-2,1]);
         text(0.012, 10^(-0.4),"$\mathcal{C}_2-\mathcal{C}_2|_{\Delta\gamma=0}$",Interpreter="latex",FontSize=10)
         set(gca, Fontsize=10)
         set(gca, 'XScale', 'log')
         set(gca, 'YScale', 'log')
+        hold off
+    end % Inset
+
+    if jj==3 % Inset (vs b)
+        S_vs_b_ana = 2*kstar*exp(-b_axis/2)./cosh(b_axis/2).*((cosh(b_axis/2)).^2 + 0.25*(dga_vs_b*sinh(b_axis/2)/ga_av).^2);
+        axes('Position', [.17 .27 .23 .15]); hold on; box on
+        plot(b_axis, S_vs_b_ana, '--k')
+        for kk=1:length(m_list)
+            plot(b_axis, S_vs_b(1,:,kk), mrkrlist(kk), Color=colourlist(kk), MarkerSize=8)
+        end
+        xlim([0, b_axis(end)])
+        xlabel("$b$", Interpreter="latex")
+%         ylabel("$\mathcal{C}_2$",Interpreter="latex")
+        set(gca, Fontsize=10)
+        hold off
     end % Inset
 
 end % jj
 
-% Skenwness
+% Skewness
 figure(2)
 for jj=2:length(b_list) % Exclude zero bias case - no block length or dga dependence
     subplot(2,1,jj-1); hold on; box on
@@ -247,7 +268,7 @@ end % jj
 % make this plot
 
 b_list2 = 0:0.2:4; % For plots against b
-dga_axis2 = [0, 0.2, 1]; % For plots against b
+dga_axis2 = [0, 1, 1.99]; % For plots against b
 
 % Compute CGF
 [CGFarray_b, ~] = bigCGF(tau, ga_av, dchi, chisteps, dga_axis2, b_list2, m_list);
@@ -316,7 +337,7 @@ for jj=1:length(dga_axis2)
     hold off
 end % jj
 
-% Plot skewness
+%% Plot skewness
 figure(6)
 for jj=1:length(dga_axis2)
     subplot(1,length(dga_axis2),jj); hold on; box on

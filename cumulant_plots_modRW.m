@@ -84,9 +84,9 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
     
     % Reference lines
     if jj==3
-        lowline = yline(kstar, ':k', "$k^*$         ", Interpreter="latex", FontSize=14);
+        lowline = yline(kstar, ':k', "$\mathcal{C}_{2,\:b\rightarrow\infty, \frac{\Delta\gamma}{\bar{\gamma}}=0}$", Interpreter="latex", FontSize=14);
         lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
-        highline = yline(2*kstar, ':k', "$2k^*$         ", Interpreter="latex", FontSize=14);
+        highline = yline(2*kstar, ':k', "$\mathcal{C}_{2,\:b\rightarrow\infty, \frac{\Delta\gamma}{\bar{\gamma}}=2}$", Interpreter="latex", FontSize=14);
         highline.Annotation.LegendInformation.IconDisplayStyle = "off";
     end
 
@@ -160,9 +160,9 @@ for jj=2:length(b_list) % Exclude zero bias case - no block length or dga depend
     
     % Reference lines
     if jj==3
-        lowline = yline(kstar, ':k', "$k^*$", Interpreter="latex", FontSize=14);
+        lowline = yline(kstar, ':k', "$\mathcal{C}_{3,\:b\rightarrow\infty, \frac{\Delta\gamma}{\bar{\gamma}}=0}$", Interpreter="latex", FontSize=14);
         lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
-        highline = yline(4*kstar, ':k', "$4k^*$", Interpreter="latex", FontSize=14);
+        highline = yline(4*kstar, ':k', "$\mathcal{C}_{3,\:b\rightarrow\infty, \frac{\Delta\gamma}{\bar{\gamma}}=2}$", Interpreter="latex", FontSize=14);
         highline.Annotation.LegendInformation.IconDisplayStyle = "off";
     end
 
@@ -218,9 +218,9 @@ for jj=1:length(b_list) % Exclude zero bias case - no block length or dga depend
     
     % Reference lines
     if jj==3
-        lowline = yline(kstar, ':k', "$k^*$", Interpreter="latex", FontSize=14);
+        lowline = yline(kstar, ':k', "$\mathcal{C}_{4,\:b\rightarrow\infty, \frac{\Delta\gamma}{\bar{\gamma}}=0}$", Interpreter="latex", FontSize=14);
         lowline.Annotation.LegendInformation.IconDisplayStyle = "off";
-        highline = yline(8*kstar, ':k', "$8k^*$", Interpreter="latex", FontSize=14);
+        highline = yline(8*kstar, ':k', "$\mathcal{C}_{4,\:b\rightarrow\infty, \frac{\Delta\gamma}{\bar{\gamma}}=2}$", Interpreter="latex", FontSize=14);
         highline.Annotation.LegendInformation.IconDisplayStyle = "off";
     end
 

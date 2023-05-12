@@ -359,6 +359,7 @@ for jj=1:length(dga_axis2)
     hold off
 end % jj
 
+%% Plot kurtosis
 figure(7)
 for jj=1:length(dga_axis2)
     subplot(1,length(dga_axis2),jj); hold on; box on
@@ -368,6 +369,29 @@ for jj=1:length(dga_axis2)
     xlabel("$b$",Interpreter="latex")
     if jj==1
         ylabel("$\mathcal{C}_4$",Interpreter="latex")
+        legend(Location="southeast", Interpreter="latex")
+    end % case
+
+    % Label subplot with delta gamma value
+    yl = ylim;
+    xl = xlim;
+    text(0.95*xl(1) + 0.05*xl(2), 0.08*yl(1) + 0.92*yl(2), strcat(lettlist(jj),"$\Delta\gamma=\;$",num2str(dga_axis2(jj))), Interpreter="latex", FontSize=14);
+
+    set(gca, fontsize=14)
+    hold off
+end % jj
+
+%% Plot kurtosis over skewness to investigate ratios of cumulants
+
+figure(8)
+for jj=1:length(dga_axis2)
+    subplot(1,length(dga_axis2),jj); hold on; box on
+    for kk=1:length(m_list)
+        plot(b_list2, C4_b(jj,:,kk)./C3_b(jj,:,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m =\;$",num2str(m_list(kk))))
+    end % kk
+    xlabel("$b$",Interpreter="latex")
+    if jj==1
+        ylabel("$\mathcal{C}_4/\mathcal{C}_3$",Interpreter="latex")
         legend(Location="southeast", Interpreter="latex")
     end % case
 

@@ -268,7 +268,7 @@ end % jj
 % make this plot
 
 b_list2 = 0:0.2:4; % For plots against b
-dga_axis2 = [0, 1, 1.99]; % For plots against b
+dga_axis2 = [0, 0.25, 1.99]; % For plots against b
 
 % Compute CGF
 [CGFarray_b, ~] = bigCGF(tau, ga_av, dchi, chisteps, dga_axis2, b_list2, m_list);
@@ -337,7 +337,8 @@ for jj=1:length(dga_axis2)
     hold off
 end % jj
 
-%% Plot skewness
+
+% Plot skewness
 figure(6)
 for jj=1:length(dga_axis2)
     subplot(1,length(dga_axis2),jj); hold on; box on
@@ -359,7 +360,8 @@ for jj=1:length(dga_axis2)
     hold off
 end % jj
 
-%% Plot kurtosis
+
+% Plot kurtosis
 figure(7)
 for jj=1:length(dga_axis2)
     subplot(1,length(dga_axis2),jj); hold on; box on
@@ -381,11 +383,16 @@ for jj=1:length(dga_axis2)
     hold off
 end % jj
 
-%% Plot kurtosis over skewness to investigate ratios of cumulants
 
+% Plot kurtosis over skewness to investigate ratios of cumulants
 figure(8)
 for jj=1:length(dga_axis2)
     subplot(1,length(dga_axis2),jj); hold on; box on
+
+    % Analytic expression for small dga/ga_av only
+%     ratio_ana = coth(b_list2/2).*(1 + (dga_axis2(jj)/ga_av).^2*(((1/64)*(exp(-2*b_list2)-36*exp(-b_list2)+118-16*exp(b_list2)+exp(2*b_list2)))./(64*cosh(b_list2/2).^3) - 3./(4*cosh(b_list2/2).^2)));
+%     plot(b_list2, ratio_ana, '--k')
+    
     for kk=1:length(m_list)
         plot(b_list2, C4_b(jj,:,kk)./C3_b(jj,:,kk), mrkrlist(kk), Color=colourlist(kk), DisplayName=strcat("$m =\;$",num2str(m_list(kk))))
     end % kk

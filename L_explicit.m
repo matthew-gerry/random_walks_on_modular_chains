@@ -36,9 +36,10 @@ function [L, sites, block_types] = L_explicit(mA, mB, bias, ga_av, dga, tau, num
 
     % Fill in remaining matrix elements
     L(1,2) = k_r(block_types(1));
-    L(numsites, numsites-1) = k(block_types(numsites-1));
+    L(2,1) = k(block_types(1));
 
-    L(2,1) = 0; L(numsites-1, numsites)=0;
+    L(numsites, numsites-1) = k(block_types(numsites-1));
+    L(numsites-1, numsites) = k_r(block_types(numsites-1));
 
     % Populate the last two diagonals
     L(1,1) = -k(block_types(1));

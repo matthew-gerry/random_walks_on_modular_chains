@@ -11,11 +11,11 @@ tau = 1; % 1/s, tunneling element
 ga_av = 1.0; % 1/s, average decoherence rate
 dga = 1.0; % 1/s, difference between decoherence rates
 
-b = 0.2; % Bias
+b = 8; % Bias
 m_list = [1,2,4,8]; % Segment length (even segments)
 
 % Simulation parameters
-numsites = 161; % Number of sites
+numsites = 321; % Number of sites
 dt = 0.2; % s, time step
 tmax = 120; % s, max time
 time = 0:dt:tmax; % time array
@@ -28,8 +28,8 @@ bigPDF = zeros(numsites,length(time),length(m_list));
 big_n_av = zeros(length(time),length(m_list));
 big_v_av = zeros(length(time),length(m_list));
 big_D_av = zeros(length(time),length(m_list));
-big_C3 = zeros(length(time),length(m_list));
-big_C4 = zeros(length(time),length(m_list));
+big_C3 = zeros(length(time)-1,length(m_list));
+big_C4 = zeros(length(time)-1,length(m_list));
 
 % Get results for analogous homogeneous walk (dga=0)
 [PDF_hom, sites, n_av_hom, ~, D_av_hom, C3_hom, C4_hom] = pdf_direct(2,2,b,ga_av,0.0,tau,numsites,dt,tmax);
@@ -109,9 +109,9 @@ hold off
 
 % Scaled skewness
 subplot(2,2,3); box on; hold on;
-plot(time, C3_hom, '--k')
+plot(time(1:end-1), C3_hom, '--k')
 for ii=1:length(m_list)
-    plot(time,big_C3(:,ii), ls_list(ii), color=colourlist(ii), linewidth=1.5)
+    plot(time(1:end-1),big_C3(:,ii), ls_list(ii), color=colourlist(ii), linewidth=1.5)
 end % ii
 xlim([0, 100])
 ylabel("$\mathcal{C}_3$", Interpreter="latex")
@@ -121,12 +121,25 @@ hold off
 
 % Scaled kurtosis
 subplot(2,2,4); box on; hold on;
-plot(time, C4_hom, '--k')
+plot(time(1:end-1), C4_hom, '--k')
 for ii=1:length(m_list)
-    plot(time,big_C4(:,ii), ls_list(ii),color=colourlist(ii), linewidth=1.5)
+    plot(time(1:end-1),big_C4(:,ii), ls_list(ii),color=colourlist(ii), linewidth=1.5)
 end % ii
 xlim([0, 100])
 ylabel("$\mathcal{C}_4$", Interpreter="latex")
 xlabel("$t$", Interpreter="latex")
 set(gca,fontsize=14)
 hold off
+
+
+%% % ANIMATE EVOLUTION OF THE PROBABILITY DISTRIBUTION
+
+m_index = 4; % Focus on the largest segment length
+
+fig = figure(); % Initialize a set of axes
+ax = axes();
+for ii=1:length(time)
+    bar(sites, bigPDF(:,ii,m_index), facecolor=colourlist(1), facealpha=0.8, EdgeColor="none");
+    drawnow
+    pause(0.05)
+end

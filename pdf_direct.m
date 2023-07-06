@@ -50,10 +50,12 @@ function [PDF, sites, n_av, v_av, D_av, C3, C4] = pdf_direct(mA,mB,bias,ga_av,dg
 
     % Skewness   
     skw = sum(PDF.*(sites_grid-n_av_grid).^3);
-    C3 = skw./time; % Scaled skewness
+%     C3 = sum(dpdt.*repmat((sites.^3)',[1,length(time)])) - 2*n_av.*sum(dpdt.*repmat((sites.^2)',[1,length(time)])) - 2*sum(PDF.*sites_grid.^2).*v_av + 3*n_av.^2.*v_av;
+    C3 = diff(skw,1,2)/dt; % Scaled skewness
 
     % Kurtosis
     krt = sum(PDF.*(sites_grid-n_av_grid).^4) - 3*S.^2;
-    C4 = krt./time; % Scaled kurtosis
+%     C4 = sum(dpdt.*repmat((sites.^4)',[1,length(time)])) - 4*sum(dpdt.*repmat((sites.^3)',[1,length(time)])).*n_av - 6*sum(dpdt.*repmat((sites.^2)',[1,length(time)])).*(sum(PDF.*sites_grid.^2) - n_av.^2) - 4*v_av.*(sum(PDF.*sites_grid.^3) - 6*n_av.*sum(PDF.*sites_grid.^2) + 6*n_av.^3);
+    C4 = diff(krt,1,2)/dt; % Scaled kurtosis
 
 end % function

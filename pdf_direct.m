@@ -2,7 +2,7 @@
 
 % Calculate the probability distribution function directly for a modular
 % random walk on a long chain, given an initial state (at site zero, by
-% choice). Do this by solving the master equation numerically.
+% choice). This is achieved by solving the master equation numerically.
 
 % Matthew Gerry, April 2023
 

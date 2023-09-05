@@ -8,8 +8,22 @@
 
 % Matthew Gerry, April 2023
 
+
+% Arguments
+% mA        - segment length for A sites
+% mB        - segment length for B sites
+% bias      - log-ratio of forward to reverse rates (set to zero for
+%             unbiased random walk)
+% ga_av     - the average ga value (proportional to reciprocal of
+%               transition rates) associated with the two blocks
+% dga       - the difference in ga between the two blocks
+% tau       - sqrt of a coefficient by which all rates are scaled
+% numsites  - total number of sites included in the simulation
+
 function [L, sites, block_types] = L_explicit(mA, mB, bias, ga_av, dga, tau, numsites)
     
+    % Display warning if the chain is set too short for the simulation to
+    % reflect the chain's modular nature
     if numsites<=mA+mB
         warning("chain length is shorter than one period of the rate variations.")
     end % warning
@@ -21,20 +35,21 @@ function [L, sites, block_types] = L_explicit(mA, mB, bias, ga_av, dga, tau, num
         k_r = k*exp(-bias); % Reverse rates
     end
     
+    % Classify sites as part of 'A' or 'B' segments
     sites = (1:numsites) - 0.5*(numsites+1); % Just an array of the site labels, from -(numsites-1)/2 to (numsites-1)/2
     block_types = 1 + ( rem(rem(sites,mA+mB)+mA+mB,mA+mB)>=mA); % 1 for sites in block type A, 2 if in B
     
     L = zeros(numsites); % Pre-allocate rate matrix
     
     for ii=2:numsites-1 % Leave out edge cases for now
-        % Populate the matrix with rates - rate type for the transtion
+        % Populate the matrix with rates - rate type for the transition
         % determined by site on the left side of the pair
         L(ii,ii+1) = k_r(block_types(ii)); % Reverse rates into site ii from the right
         L(ii,ii-1) = k(block_types(ii-1)); % Forward rates into site ii from the left
         L(ii,ii) = -k(block_types(ii)) - k_r(block_types(ii-1)); % Rates out of site ii
     end % ii
 
-    % Fill in remaining matrix elements
+    % Fill in remaining matrix elements - use reflecting boundaries
     L(1,2) = k_r(block_types(1));
     L(2,1) = k(block_types(1));
 

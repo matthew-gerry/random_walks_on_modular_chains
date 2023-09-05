@@ -2,7 +2,9 @@
 
 % Plot the probability distribution function derived directly from the
 % master equation for a modular random walk on a long but finite chain (as
-% in the function pdf_direct)
+% in the function pdf_direct). Plot the cumulants as a function of time as
+% derived from the numerically determined probability distribution
+% function.
 
 % Matthew Gerry, April 2023
 
@@ -11,11 +13,11 @@ tau = 1; % 1/s, tunneling element
 ga_av = 1.0; % 1/s, average decoherence rate
 dga = 1.0; % 1/s, difference between decoherence rates
 
-b = 8; % Bias
+b = 0.2; % Bias
 m_list = [1,2,4,8]; % Segment length (even segments)
 
 % Simulation parameters
-numsites = 321; % Number of sites
+numsites = 161; % Number of sites
 dt = 0.2; % s, time step
 tmax = 120; % s, max time
 time = 0:dt:tmax; % time array
@@ -47,13 +49,12 @@ for ii=1:length(m_list)
     big_C4(:,ii) = C4;
 end
 
+%%% PLOT PROBABILITY DISTRIBUTIONS %%%
+
 % Define some colours, linestyles, and labels for plotting
 colourlist = ["#0072BD", "#D95319", "#77AC30","#7E2F8E"];
 lettlist = ["(a) ", "(b) ", "(c) ", "(d) "];
 ls_list = ["-","--",":","-."];
-
-
-%%% PLOT PROBABILITY DISTRIBUTIONS %%%
 
 snapshot_times = [50, 175, 400];  % Specific indices of time array at which to show PDF (arb.)
 
@@ -68,7 +69,7 @@ for ii=1:length(m_list)
         bar(sites, bigPDF(:,t_snap,ii), facecolor=colourlist(jj), facealpha=0.6, EdgeColor="none",DisplayName=strcat("$t=\;$",num2str(dt*t_snap)));
         hom_curve.Annotation.LegendInformation.IconDisplayStyle = "off";
     end % jj
-%     xlim([-10,sites(end)]) % If high bias
+%     xlim([-10,sites(end)]) % Uncomment if running at high bias
     ylim([0, 1.2*max(bigPDF(:,snapshot_times(1),ii))])
     yl = ylim; xl = xlim;
     if ii>2; xlabel("$n$",Interpreter="latex"); end
@@ -132,14 +133,13 @@ set(gca,fontsize=14)
 hold off
 
 
-%% % ANIMATE EVOLUTION OF THE PROBABILITY DISTRIBUTION
+%% % ANIMATE EVOLUTION OF THE PROBABILITY DISTRIBUTION %%%
 
 m_index = 4; % Focus on the largest segment length
 
 fig = figure(); % Initialize a set of axes
-ax = axes();
 for ii=1:length(time)
     bar(sites, bigPDF(:,ii,m_index), facecolor=colourlist(1), facealpha=0.8, EdgeColor="none");
     drawnow
-    pause(0.05)
+    pause(dt)
 end

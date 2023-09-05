@@ -7,7 +7,7 @@
 % The chi-dressed Liouvillian is that of a corresponding Markov jump
 % process on a cyclic network of states, doing counting statistics on
 % the number of trips the system has taken around this cycle multiplied by
-% the steps-per-trip (number of sites)
+% the steps-per-trip (number of sites).
 
 % Specifically, the transition rates for each block are given by a
 % tunnelling parameter squared, tau^2 divided by a decoherence rate ga
@@ -102,17 +102,9 @@ function [Lchi, k, k_r, chi] = diffusionLchi(nA,nB,bias,ga_av,dga,tau,dchi,chist
         end % jj
     
         % Incorporate chi-dependence to 1<->2 transitions, scale by number of
-%         % steps in a cycle (dimL)
-%         Lchi(1,2,:) = L(1,2)*exp(-dimL*1i*chi);
-%         Lchi(2,1,:) = L(2,1)*exp(dimL*1i*chi);
+        % steps in a cycle (dimL)
+        Lchi(1,2,:) = L(1,2)*exp(-dimL*1i*chi);
+        Lchi(2,1,:) = L(2,1)*exp(dimL*1i*chi);
 
-        % Incorporate the chi-dependence, counting a step at every transition
-        Lchi(1,dimL,:) = L(1,dimL)*exp(1i*chi);
-        Lchi(dimL,1,:) = L(dimL,1)*exp(-1i*chi);
-        for ii=1:dimL-1
-            Lchi(ii,ii+1,:) = L(ii,ii+1)*exp(-1i*chi);
-            Lchi(ii+1,ii,:) = L(ii+1,ii)*exp(1i*chi);
-        end % ii
-    
     end % cases
 end % function
